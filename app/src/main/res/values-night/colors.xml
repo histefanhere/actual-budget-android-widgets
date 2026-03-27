@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget semantic colours (dark theme) -->
+    <color name="widget_background">#FF1C1824</color>
+    <color name="widget_accent">#FFB39DDB</color>
+    <color name="widget_positive">#FF147D64</color>
+    <color name="widget_negative">#FFE12D39</color>
+    <color name="widget_amber">#FFFCD34D</color>
+    <color name="widget_bar_track">#33B39DDB</color>
+    <color name="widget_on_surface">#FFF0EBFF</color>
+    <color name="widget_on_surface_variant">#FF9E8EC4</color>
+</resources>

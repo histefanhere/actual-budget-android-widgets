@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Actual Budget Widgets</string>
+    <string name="widget_name">Monthly Summary</string>
+    <string name="widget_description">Shows information about this month\'s budget, spending, balance, and more.</string>
+    <string name="category_widget_name">Category Breakdown</string>
+    <string name="category_widget_description">Shows spending information and progress bars for each budget category or group.</string>
+    <string name="widget_loading">Loading…</string>
+    <string name="configure_widget_title">Configure Widget</string>
+</resources>

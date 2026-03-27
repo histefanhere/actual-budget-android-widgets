@@ -1,0 +1,4 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Used by the widget configuration activity -->
+    <style name="Theme.ActualBudgetAndroidWidgets" parent="Theme.AppCompat.DayNight.NoActionBar" />
+</resources>
