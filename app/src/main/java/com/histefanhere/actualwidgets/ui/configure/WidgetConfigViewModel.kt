@@ -25,9 +25,12 @@ import com.histefanhere.actualwidgets.data.repository.BudgetRepository
 import com.histefanhere.actualwidgets.model.WidgetConfig
 import com.histefanhere.actualwidgets.model.WidgetSize
 import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import com.histefanhere.actualwidgets.widget.BudgetWidget
+import com.histefanhere.actualwidgets.widget.BudgetWidgetReceiver
 import com.histefanhere.actualwidgets.widget.BudgetWidgetWorker
 import com.histefanhere.actualwidgets.widget.CategoryGroupWidget
+import com.histefanhere.actualwidgets.widget.CategoryGroupWidgetReceiver
 import com.histefanhere.actualwidgets.widget.CategoryGroupWidgetWorker
 import com.histefanhere.actualwidgets.widget.WidgetStateKeys
 import kotlinx.coroutines.launch
@@ -73,7 +76,11 @@ class WidgetConfigViewModel(
     init {
         // Pre-populate fields when reconfiguring an existing widget
         viewModelScope.launch {
-            val existing = prefsStore.getConfig(appWidgetId) ?: return@launch
+            val existing = prefsStore.getConfig(appWidgetId)
+            if (existing == null) {
+                loadConnectionDefaults()
+                return@launch
+            }
             serverUrl = existing.serverUrl
             apiKey = existing.apiKey
             currencySymbol = existing.currencySymbol
@@ -324,6 +331,24 @@ class WidgetConfigViewModel(
                 }
             }
             CategoryGroupWidget().update(getApplication(), glanceId)
+        }
+    }
+
+    private suspend fun loadConnectionDefaults() {
+        val appWidgetManager = AppWidgetManager.getInstance(getApplication())
+        val providers = listOf(
+            ComponentName(getApplication(), BudgetWidgetReceiver::class.java),
+            ComponentName(getApplication(), CategoryGroupWidgetReceiver::class.java),
+        )
+        for (provider in providers) {
+            for (id in appWidgetManager.getAppWidgetIds(provider)) {
+                if (id == appWidgetId) continue
+                val config = prefsStore.getConfig(id) ?: continue
+                serverUrl = config.serverUrl
+                apiKey = config.apiKey
+                currencySymbol = config.currencySymbol
+                return
+            }
         }
     }
 
