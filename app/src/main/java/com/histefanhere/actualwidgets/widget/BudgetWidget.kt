@@ -190,7 +190,7 @@ private fun SuccessContent(
     showCents: Boolean,
     visibleStats: Set<BudgetStat>,
 ) {
-    val isWide = LocalSize.current.width >= 280.dp
+    val isWide = LocalSize.current.width >= 230.dp
     val statList = BudgetStat.entries.filter { it in visibleStats }
 
     WidgetSurface {
