@@ -56,6 +56,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.histefanhere.actualwidgets.R
+import com.histefanhere.actualwidgets.model.BarScaleMode
 import com.histefanhere.actualwidgets.model.BudgetStat
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
 import com.histefanhere.actualwidgets.model.CategoryViewMode
@@ -238,7 +239,7 @@ private fun WidgetConfigScreen(
             }
 
             // ── Section 2: Widget Settings ────────────────────────────────────
-            ConfigSection(title = "General Settings") {
+            ConfigSection(title = "General") {
                 OutlinedTextField(
                     value = viewModel.currencySymbol,
                     onValueChange = { viewModel.currencySymbol = it },
@@ -273,7 +274,7 @@ private fun WidgetConfigScreen(
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         Text(
-                            text = "Display full precision (e.g. $12.50) or whole numbers only (e.g. $12).",
+                            text = "Display figures in whole numbers only ($12) or full precision ($12.50).",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -320,8 +321,9 @@ private fun WidgetConfigScreen(
 
             // ── Section 3/4: Display (category widget only) ───────────────────
             if (!viewModel.isBudgetWidget) {
-                ConfigSection(title = "Widget Settings") {
-                    SectionLabel("Show As")
+                ConfigSection(title = "Display") {
+                    // ── View ──────────────────────────────────────────────────
+                    SectionLabel("View")
                     val viewModeOptions = listOf(CategoryViewMode.GROUPS, CategoryViewMode.CATEGORIES)
                     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                         viewModeOptions.forEachIndexed { index, mode ->
@@ -333,9 +335,10 @@ private fun WidgetConfigScreen(
                             )
                         }
                     }
-                    FieldHint("Groups rolls up all categories within a group into one row. Categories shows each line individually.")
+                    FieldHint("Groups combines all categories into one row per group.")
 
-                    SectionLabel("Display Format")
+                    // ── Numbers ───────────────────────────────────────────────
+                    SectionLabel("Number format")
                     var formatExpanded by remember { mutableStateOf(false) }
                     ExposedDropdownMenuBox(
                         expanded = formatExpanded,
@@ -363,44 +366,9 @@ private fun WidgetConfigScreen(
                             }
                         }
                     }
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        CategoryRowFormat.entries.forEach { format ->
-                            val selected = viewModel.categoryRowFormat == format
-                            Row(verticalAlignment = Alignment.Top) {
-                                Spacer(Modifier.width(4.dp))
-                                Column {
-                                    Text(
-                                        text = format.label,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = if (selected) MaterialTheme.colorScheme.primary
-                                                else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                    Text(
-                                        text = format.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    FieldHint(viewModel.categoryRowFormat.description)
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Text(
-                            text = "Progress Bars",
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.weight(1f).padding(end = 16.dp),
-                        )
-                        Switch(
-                            checked = viewModel.showProgressBars,
-                            onCheckedChange = { viewModel.showProgressBars = it },
-                        )
-                    }
-
+                    // ── Progress Bars ─────────────────────────────────────────
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -408,24 +376,71 @@ private fun WidgetConfigScreen(
                     ) {
                         Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
                             Text(
-                                text = "Proportional Scale",
+                                text = "Progress Bars",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = if (viewModel.showProgressBars) MaterialTheme.colorScheme.onSurface
-                                        else MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Text(
-                                text = "Bars are proportional to budget size — the largest fills the full width.",
+                                text = "Show a spending bar on each row.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         Switch(
-                            checked = viewModel.normalizedScale,
-                            onCheckedChange = { viewModel.applyNormalizedScale(it) },
-                            enabled = viewModel.showProgressBars,
+                            checked = viewModel.showProgressBars,
+                            onCheckedChange = { viewModel.showProgressBars = it },
                         )
                     }
 
+                    // ── Progress bar sub-options (indented) ───────────────────
+                    if (viewModel.showProgressBars) {
+                        Column(
+                            modifier = Modifier.padding(start = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            // Bars represent
+                            SectionLabel("Bars represent")
+                            val barScaleModeOptions = listOf(BarScaleMode.SPENT_OF_BUDGETED, BarScaleMode.SPENT_OF_AVAILABLE)
+                            SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                                barScaleModeOptions.forEachIndexed { index, mode ->
+                                    SegmentedButton(
+                                        selected = viewModel.barScaleMode == mode,
+                                        onClick = { viewModel.applyBarScaleMode(mode) },
+                                        shape = SegmentedButtonDefaults.itemShape(index = index, count = barScaleModeOptions.size),
+                                        label = { Text(mode.label) },
+                                    )
+                                }
+                            }
+                            FieldHint(viewModel.barScaleMode.description)
+
+                            // Proportional width
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                            ) {
+                                Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+                                    Text(
+                                        text = "Proportional width",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                    )
+                                    Text(
+                                        text = "Only the largest bar fills the full width; others are scaled proportionally.",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                Switch(
+                                    checked = viewModel.normalizedScale,
+                                    onCheckedChange = { viewModel.applyNormalizedScale(it) },
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // ── Section 4: Filters (category widget only) ─────────────────
+                ConfigSection(title = "Filters") {
+                    FieldHint("Uncheck items to hide them from the widget.")
                     when {
                         viewModel.isLoadingGroups -> CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
@@ -437,8 +452,6 @@ private fun WidgetConfigScreen(
                             style = MaterialTheme.typography.bodySmall,
                         )
                         viewModel.availableCategoryGroupsWithCategories.isNotEmpty() -> {
-                            SectionLabel("Visible Groups & Categories")
-                            FieldHint("Unchecked items are hidden from the widget.")
                             CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
                                 Column {
                                     viewModel.availableCategoryGroupsWithCategories.forEach { group ->
@@ -480,6 +493,7 @@ private fun WidgetConfigScreen(
                                 }
                             }
                         }
+                        else -> FieldHint("Connect to your server and select a budget to manage filters.")
                     }
                 }
             }

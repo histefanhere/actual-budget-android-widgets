@@ -46,6 +46,7 @@ import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.google.gson.Gson
 import com.histefanhere.actualwidgets.R
+import com.histefanhere.actualwidgets.model.BarScaleMode
 import com.histefanhere.actualwidgets.model.CategoryGroupEntry
 import com.histefanhere.actualwidgets.model.CategoryGroupsSnapshot
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
@@ -99,8 +100,11 @@ class CategoryGroupWidget : GlanceAppWidget() {
                         val rowFormat = prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT]
                             ?.let { runCatching { CategoryRowFormat.valueOf(it) }.getOrNull() }
                             ?: CategoryRowFormat.SPENT_OF_BUDGETED
+                        val barScaleMode = prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]
+                            ?.let { runCatching { BarScaleMode.valueOf(it) }.getOrNull() }
+                            ?: BarScaleMode.SPENT_OF_BUDGETED
                         val snapshot = json?.let { Gson().fromJson(it, CategoryGroupsSnapshot::class.java) }
-                        if (snapshot != null) SuccessContent(snapshot, viewMode, normalizedScale, sizes, showCents, showProgressBars, rowFormat) else LoadingContent()
+                        if (snapshot != null) SuccessContent(snapshot, viewMode, normalizedScale, barScaleMode, sizes, showCents, showProgressBars, rowFormat) else LoadingContent()
                     }
                     else -> LoadingContent()
                 }
@@ -171,12 +175,18 @@ private fun SuccessContent(
     snapshot: CategoryGroupsSnapshot,
     viewMode: CategoryViewMode,
     normalizedScale: Boolean,
+    barScaleMode: BarScaleMode,
     sizes: TextSizes,
     showCents: Boolean,
     showProgressBars: Boolean,
     rowFormat: CategoryRowFormat,
 ) {
-    val maxBudgeted = if (normalizedScale) snapshot.groups.maxOfOrNull { it.budgeted } ?: 0L else 0L
+    val maxValue: Long = if (normalizedScale) {
+        when (barScaleMode) {
+            BarScaleMode.SPENT_OF_BUDGETED  -> snapshot.groups.maxOfOrNull { it.budgeted } ?: 0L
+            BarScaleMode.SPENT_OF_AVAILABLE -> snapshot.groups.maxOfOrNull { it.balance + abs(it.spent) } ?: 0L
+        }
+    } else 0L
     WidgetSurface {
         Column(modifier = GlanceModifier.fillMaxSize().padding(sizes.paddingDp.dp)) {
             LazyColumn(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
@@ -205,7 +215,7 @@ private fun SuccessContent(
                     }
                 }
                 items(snapshot.groups) { group ->
-                    GroupRow(group, snapshot.currencySymbol, maxBudgeted, sizes, showCents, showProgressBars, rowFormat)
+                    GroupRow(group, snapshot.currencySymbol, maxValue, barScaleMode, sizes, showCents, showProgressBars, rowFormat)
                 }
             }
             Text(
@@ -219,18 +229,23 @@ private fun SuccessContent(
 // ─── Group row ────────────────────────────────────────────────────────────────
 
 @Composable
-private fun GroupRow(group: CategoryGroupEntry, currencySymbol: String, maxBudgeted: Long, sizes: TextSizes, showCents: Boolean, showProgressBars: Boolean, rowFormat: CategoryRowFormat) {
+private fun GroupRow(group: CategoryGroupEntry, currencySymbol: String, maxValue: Long, barScaleMode: BarScaleMode, sizes: TextSizes, showCents: Boolean, showProgressBars: Boolean, rowFormat: CategoryRowFormat) {
     val context = LocalContext.current
     val widgetWidth = LocalSize.current.width
     val absSpent = abs(group.spent)
+    val available = group.balance + absSpent  // budgeted + carry-over from last month
+    val denominator: Long = when (barScaleMode) {
+        BarScaleMode.SPENT_OF_BUDGETED  -> group.budgeted
+        BarScaleMode.SPENT_OF_AVAILABLE -> available
+    }
     val rawRatio = when {
-        group.budgeted <= 0L && absSpent == 0L -> 0f
-        group.budgeted <= 0L -> 2f
-        else -> absSpent.toFloat() / group.budgeted.toFloat()
+        denominator <= 0L && absSpent == 0L -> 0f
+        denominator <= 0L -> 2f
+        else -> absSpent.toFloat() / denominator.toFloat()
     }
     val fillRatio = rawRatio.coerceIn(0f, 1f)
-    val trackRatio = if (maxBudgeted > 0L && group.budgeted > 0L) {
-        (group.budgeted.toFloat() / maxBudgeted.toFloat()).coerceIn(0.02f, 1f)
+    val trackRatio = if (maxValue > 0L && denominator > 0L) {
+        (denominator.toFloat() / maxValue.toFloat()).coerceIn(0.02f, 1f)
     } else {
         1f
     }

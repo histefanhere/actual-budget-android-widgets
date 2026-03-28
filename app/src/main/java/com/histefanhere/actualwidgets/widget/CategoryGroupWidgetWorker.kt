@@ -57,6 +57,7 @@ class CategoryGroupWidgetWorker(
                 prefs[CategoryWidgetStateKeys.SHOW_CENTS]          = config.showCents
                 prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS]  = config.showProgressBars
                 prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT] = config.categoryRowFormat.name
+                prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]      = config.barScaleMode.name
                 prefs.remove(CategoryWidgetStateKeys.ERROR_MESSAGE)
             }
             Result.success()

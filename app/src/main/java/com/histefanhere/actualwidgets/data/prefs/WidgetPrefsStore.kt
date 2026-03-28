@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.histefanhere.actualwidgets.model.BarScaleMode
 import com.histefanhere.actualwidgets.model.BudgetStat
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
 import com.histefanhere.actualwidgets.model.CategoryViewMode
@@ -56,6 +57,7 @@ class WidgetPrefsStore(private val context: Context) {
             prefs[showCentsKey(widgetId)] = config.showCents
             prefs[showProgressBarsKey(widgetId)] = config.showProgressBars
             prefs[key(widgetId, "category_row_format")] = config.categoryRowFormat.name
+            prefs[key(widgetId, "bar_scale_mode")] = config.barScaleMode.name
             prefs[visibleBudgetStatsKey(widgetId)] = config.visibleBudgetStats.map { it.name }.toSet()
         }
     }
@@ -85,6 +87,9 @@ class WidgetPrefsStore(private val context: Context) {
             categoryRowFormat = prefs[key(widgetId, "category_row_format")]
                 ?.let { runCatching { CategoryRowFormat.valueOf(it) }.getOrNull() }
                 ?: CategoryRowFormat.SPENT_OF_BUDGETED,
+            barScaleMode = prefs[key(widgetId, "bar_scale_mode")]
+                ?.let { runCatching { BarScaleMode.valueOf(it) }.getOrNull() }
+                ?: BarScaleMode.SPENT_OF_BUDGETED,
             visibleBudgetStats = prefs[visibleBudgetStatsKey(widgetId)]
                 ?.mapNotNull { runCatching { BudgetStat.valueOf(it) }.getOrNull() }
                 ?.toSet()
@@ -104,6 +109,7 @@ class WidgetPrefsStore(private val context: Context) {
             prefs.remove(showCentsKey(widgetId))
             prefs.remove(showProgressBarsKey(widgetId))
             prefs.remove(key(widgetId, "category_row_format"))
+            prefs.remove(key(widgetId, "bar_scale_mode"))
             prefs.remove(visibleBudgetStatsKey(widgetId))
         }
     }

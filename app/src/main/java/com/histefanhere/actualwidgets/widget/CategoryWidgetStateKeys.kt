@@ -16,4 +16,5 @@ object CategoryWidgetStateKeys {
     val SHOW_CENTS         = booleanPreferencesKey("show_cents")
     val SHOW_PROGRESS_BARS = booleanPreferencesKey("show_progress_bars")
     val CATEGORY_ROW_FORMAT = stringPreferencesKey("category_row_format")
+    val BAR_SCALE_MODE      = stringPreferencesKey("bar_scale_mode")
 }

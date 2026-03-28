@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.histefanhere.actualwidgets.data.api.ApiClientFactory
 import com.histefanhere.actualwidgets.data.api.BudgetFile
+import com.histefanhere.actualwidgets.model.BarScaleMode
 import com.histefanhere.actualwidgets.model.BudgetStat
 import com.histefanhere.actualwidgets.model.CategoryGroupWithCategories
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
@@ -57,6 +58,7 @@ class WidgetConfigViewModel(
     var hiddenCategoryIds by mutableStateOf<Set<String>>(emptySet())
     var categoryViewMode by mutableStateOf(CategoryViewMode.GROUPS)
     var categoryRowFormat by mutableStateOf(CategoryRowFormat.SPENT_OF_BUDGETED)
+    var barScaleMode by mutableStateOf(BarScaleMode.SPENT_OF_BUDGETED)
     var normalizedScale by mutableStateOf(false)
     var showCents by mutableStateOf(true)
     var showProgressBars by mutableStateOf(true)
@@ -82,6 +84,7 @@ class WidgetConfigViewModel(
             hiddenCategoryIds = existing.hiddenCategoryIds
             categoryViewMode = existing.categoryViewMode
             categoryRowFormat = existing.categoryRowFormat
+            barScaleMode = existing.barScaleMode
             normalizedScale = existing.normalizedScale
             showCents = existing.showCents
             showProgressBars = existing.showProgressBars
@@ -131,6 +134,7 @@ class WidgetConfigViewModel(
                 hiddenCategoryIds = hiddenCategoryIds,
                 categoryViewMode = categoryViewMode,
                 categoryRowFormat = categoryRowFormat,
+                barScaleMode = barScaleMode,
                 normalizedScale = normalizedScale,
                 showCents = showCents,
                 showProgressBars = showProgressBars,
@@ -165,7 +169,8 @@ class WidgetConfigViewModel(
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = categoryViewMode,
-                categoryRowFormat = categoryRowFormat,
+                    categoryRowFormat = categoryRowFormat,
+                    barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
                     visibleBudgetStats = visibleBudgetStats,
@@ -238,7 +243,8 @@ class WidgetConfigViewModel(
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = categoryViewMode,
-                categoryRowFormat = categoryRowFormat,
+                    categoryRowFormat = categoryRowFormat,
+                    barScaleMode = barScaleMode,
                     normalizedScale = enabled,
                     showCents = showCents,
                     visibleBudgetStats = visibleBudgetStats,
@@ -249,6 +255,39 @@ class WidgetConfigViewModel(
             updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
                 current.toMutablePreferences().apply {
                     this[CategoryWidgetStateKeys.NORMALIZED_SCALE] = enabled
+                }
+            }
+            CategoryGroupWidget().update(getApplication(), glanceId)
+        }
+    }
+
+    fun applyBarScaleMode(mode: BarScaleMode) {
+        barScaleMode = mode
+        viewModelScope.launch {
+            prefsStore.saveConfig(
+                appWidgetId,
+                WidgetConfig(
+                    serverUrl = serverUrl,
+                    apiKey = apiKey,
+                    budgetId = selectedBudgetId,
+                    budgetName = selectedBudgetName,
+                    currencySymbol = currencySymbol.ifBlank { "$" },
+                    widgetSize = widgetSize,
+                    hiddenCategoryGroupIds = hiddenCategoryGroupIds,
+                    hiddenCategoryIds = hiddenCategoryIds,
+                    categoryViewMode = categoryViewMode,
+                    categoryRowFormat = categoryRowFormat,
+                    barScaleMode = mode,
+                    normalizedScale = normalizedScale,
+                    showCents = showCents,
+                    visibleBudgetStats = visibleBudgetStats,
+                ),
+            )
+            val glanceId = GlanceAppWidgetManager(getApplication()).getGlanceIdBy(appWidgetId)
+                ?: return@launch
+            updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
+                current.toMutablePreferences().apply {
+                    this[CategoryWidgetStateKeys.BAR_SCALE_MODE] = mode.name
                 }
             }
             CategoryGroupWidget().update(getApplication(), glanceId)
@@ -270,6 +309,8 @@ class WidgetConfigViewModel(
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = mode,
+                    categoryRowFormat = categoryRowFormat,
+                    barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
                     visibleBudgetStats = visibleBudgetStats,
