@@ -250,12 +250,12 @@ private fun GroupRow(group: CategoryGroupEntry, currencySymbol: String, maxValue
         1f
     }
     val barColorRes = when {
-        rawRatio > 1f -> R.color.widget_negative
+        rawRatio >= 1f -> R.color.widget_negative
         rawRatio > 0.8f -> R.color.widget_amber
         else -> R.color.widget_positive
     }
     val barColorProvider = when {
-        rawRatio > 1f -> ColorNegative
+        rawRatio >= 1f -> ColorNegative
         rawRatio > 0.8f -> ColorAmber
         else -> ColorPositive
     }
