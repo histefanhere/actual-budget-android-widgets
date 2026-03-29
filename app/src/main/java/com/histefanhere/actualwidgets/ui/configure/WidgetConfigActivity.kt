@@ -248,8 +248,6 @@ private fun WidgetConfigScreen(
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 )
-                FieldHint("Currency to show all figures in.")
-
                 SectionLabel("Widget Size")
                 val sizeOptions = listOf(WidgetSize.SMALL, WidgetSize.MEDIUM, WidgetSize.LARGE, WidgetSize.MASSIVE)
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
@@ -268,17 +266,11 @@ private fun WidgetConfigScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
-                        Text(
-                            text = "Show Cents",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        Text(
-                            text = "Display figures in whole numbers only ($12) or full precision ($12.50).",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    Text(
+                        text = "Show Cents",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f).padding(end = 16.dp),
+                    )
                     Switch(
                         checked = viewModel.showCents,
                         onCheckedChange = { viewModel.showCents = it },
@@ -324,19 +316,17 @@ private fun WidgetConfigScreen(
                 ConfigSection(title = "Display") {
                     // ── View ──────────────────────────────────────────────────
                     SectionLabel("View")
-                    val viewModeOptions = listOf(CategoryViewMode.GROUPS, CategoryViewMode.CATEGORIES)
+                    val viewModeOptions = listOf(CategoryViewMode.CATEGORIES, CategoryViewMode.GROUPS)
                     SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                         viewModeOptions.forEachIndexed { index, mode ->
                             SegmentedButton(
                                 selected = viewModel.categoryViewMode == mode,
                                 onClick = { viewModel.applyViewMode(mode) },
                                 shape = SegmentedButtonDefaults.itemShape(index = index, count = viewModeOptions.size),
-                                label = { Text(if (mode == CategoryViewMode.GROUPS) "Groups" else "Categories") },
+                                label = { Text(if (mode == CategoryViewMode.CATEGORIES) "Categories" else "Groups") },
                             )
                         }
                     }
-                    FieldHint("Groups combines all categories into one row per group.")
-
                     // ── Numbers ───────────────────────────────────────────────
                     SectionLabel("Number format")
                     var formatExpanded by remember { mutableStateOf(false) }
@@ -374,17 +364,11 @@ private fun WidgetConfigScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
-                            Text(
-                                text = "Progress Bars",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                            Text(
-                                text = "Show a spending bar on each row.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
+                        Text(
+                            text = "Progress Bars",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.weight(1f).padding(end = 16.dp),
+                        )
                         Switch(
                             checked = viewModel.showProgressBars,
                             onCheckedChange = { viewModel.showProgressBars = it },
@@ -420,7 +404,7 @@ private fun WidgetConfigScreen(
                             ) {
                                 Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
                                     Text(
-                                        text = "Proportional width",
+                                        text = "Proportional length",
                                         style = MaterialTheme.typography.bodyMedium,
                                     )
                                     Text(

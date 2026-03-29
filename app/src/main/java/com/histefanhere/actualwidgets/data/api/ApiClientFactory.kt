@@ -25,8 +25,8 @@ object ApiClientFactory {
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
 
-        // Ensure the base URL always ends with a slash for Retrofit
-        val normalizedUrl = baseUrl.trimEnd('/') + '/'
+        // Ensure the base URL includes /v1/ path and ends with a slash for Retrofit
+        val normalizedUrl = baseUrl.trimEnd('/') + "/v1/"
 
         return Retrofit.Builder()
             .baseUrl(normalizedUrl)
