@@ -298,11 +298,15 @@ private fun GroupRow(group: CategoryGroupEntry, currencySymbol: String, maxValue
         }
         if (showProgressBars) {
             Spacer(GlanceModifier.height((sizes.paddingDp * 0.375f).dp))
-            Image(
-                provider = ImageProvider(barBitmap),
-                contentDescription = null,
-                modifier = GlanceModifier.fillMaxWidth().height(barHeightDp.dp),
-            )
+            if (denominator > 0L || absSpent > 0L) {
+                Image(
+                    provider = ImageProvider(barBitmap),
+                    contentDescription = null,
+                    modifier = GlanceModifier.fillMaxWidth().height(barHeightDp.dp),
+                )
+            } else {
+                Spacer(GlanceModifier.height(barHeightDp.dp))
+            }
         }
         Spacer(GlanceModifier.height(sizes.paddingDp.dp))
     }

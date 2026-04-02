@@ -57,7 +57,6 @@ class BudgetRepository(private val api: ActualApiService) {
                     balance = visible.sumOf { it.balance },
                 )
             }
-            ?.filter { it.budgeted > 0L || it.spent < 0L }
             ?: emptyList()
 
         return CategoryGroupsSnapshot(
@@ -97,7 +96,6 @@ class BudgetRepository(private val api: ActualApiService) {
             ?.flatMap { group ->
                 group.categories
                     .filter { !it.hidden && it.id !in config.hiddenCategoryIds }
-                    .filter { it.budgeted > 0L || it.spent < 0L }
                     .map { cat ->
                         CategoryGroupEntry(
                             name = cat.name,
