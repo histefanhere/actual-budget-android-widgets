@@ -205,11 +205,27 @@ private fun SuccessContent(
                             modifier = GlanceModifier.defaultWeight(),
                         )
                         Image(
+                            provider = ImageProvider(R.drawable.ic_chevron_left),
+                            contentDescription = "Previous month",
+                            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                            modifier = GlanceModifier
+                                .size((sizes.headerSp * 1.4f).dp)
+                                .clickable(actionRunCallback<CategoryPreviousMonthAction>()),
+                        )
+                        Image(
+                            provider = ImageProvider(R.drawable.ic_chevron_right),
+                            contentDescription = "Next month",
+                            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                            modifier = GlanceModifier
+                                .size((sizes.headerSp * 1.4f).dp)
+                                .clickable(actionRunCallback<CategoryNextMonthAction>()),
+                        )
+                        Image(
                             provider = ImageProvider(R.drawable.ic_refresh),
                             contentDescription = "Refresh",
                             colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                             modifier = GlanceModifier
-                                .size(sizes.headerSp.dp)
+                                .size((sizes.headerSp * 1.4f).dp)
                                 .clickable(actionRunCallback<CategoryRefreshAction>()),
                         )
                     }

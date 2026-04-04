@@ -15,6 +15,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.histefanhere.actualwidgets.data.api.ApiClientFactory
@@ -34,18 +35,22 @@ class CategoryGroupWidgetWorker(
         val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId)
             ?: return Result.failure()
 
+        val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
+            .let { it[CategoryWidgetStateKeys.MONTH_OFFSET] ?: 0 }
+
         val config = WidgetPrefsStore(context).getConfig(appWidgetId)
         if (config == null) {
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_NOT_CONFIGURED
+                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             return Result.success()
         }
 
         return try {
             val repo = BudgetRepository(ApiClientFactory.create(config.serverUrl, config.apiKey))
-            val groupsSnapshot = repo.fetchCategoryGroups(config)
-            val categoriesSnapshot = repo.fetchIndividualCategories(config)
+            val groupsSnapshot = repo.fetchCategoryGroups(config, monthOffset)
+            val categoriesSnapshot = repo.fetchIndividualCategories(config, monthOffset)
 
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_SUCCESS
@@ -58,6 +63,7 @@ class CategoryGroupWidgetWorker(
                 prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS]  = config.showProgressBars
                 prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT] = config.categoryRowFormat.name
                 prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]      = config.barScaleMode.name
+                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
                 prefs.remove(CategoryWidgetStateKeys.ERROR_MESSAGE)
             }
             Result.success()
@@ -65,6 +71,7 @@ class CategoryGroupWidgetWorker(
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_ERROR
                 prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] = e.message ?: "Network error"
+                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()
         }

@@ -15,6 +15,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.histefanhere.actualwidgets.data.api.ApiClientFactory
@@ -34,10 +35,14 @@ class BudgetWidgetWorker(
         val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId)
             ?: return Result.failure()
 
+        val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
+            .let { it[WidgetStateKeys.MONTH_OFFSET] ?: 0 }
+
         val config = WidgetPrefsStore(context).getConfig(appWidgetId)
         if (config == null) {
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[WidgetStateKeys.STATE_TYPE] = STATE_NOT_CONFIGURED
+                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             return Result.success()
         }
@@ -45,7 +50,7 @@ class BudgetWidgetWorker(
         return try {
             val summary = BudgetRepository(
                 ApiClientFactory.create(config.serverUrl, config.apiKey)
-            ).fetchBudgetSummary(config)
+            ).fetchBudgetSummary(config, monthOffset)
 
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[WidgetStateKeys.STATE_TYPE] = STATE_SUCCESS
@@ -53,6 +58,7 @@ class BudgetWidgetWorker(
                 prefs[WidgetStateKeys.WIDGET_SIZE]          = config.widgetSize.name
                 prefs[WidgetStateKeys.SHOW_CENTS]           = config.showCents
                 prefs[WidgetStateKeys.VISIBLE_BUDGET_STATS] = config.visibleBudgetStats.joinToString(",") { it.name }
+                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
                 prefs.remove(WidgetStateKeys.ERROR_MESSAGE)
             }
             Result.success()
@@ -60,6 +66,7 @@ class BudgetWidgetWorker(
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[WidgetStateKeys.STATE_TYPE] = STATE_ERROR
                 prefs[WidgetStateKeys.ERROR_MESSAGE] = e.message ?: "Network error"
+                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()
         }

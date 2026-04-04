@@ -20,8 +20,8 @@ class BudgetRepository(private val api: ActualApiService) {
 
     suspend fun fetchBudgets(): List<BudgetFile> = api.getBudgets().data
 
-    suspend fun fetchBudgetSummary(config: WidgetConfig): BudgetSummary {
-        val thisMonthStr = LocalDate.now().format(MONTH_FORMAT)
+    suspend fun fetchBudgetSummary(config: WidgetConfig, monthOffset: Int = 0): BudgetSummary {
+        val thisMonthStr = LocalDate.now().plusMonths(monthOffset.toLong()).format(MONTH_FORMAT)
         val data = api.getBudgetMonth(config.budgetId, thisMonthStr).data
 
         return BudgetSummary(
@@ -41,8 +41,8 @@ class BudgetRepository(private val api: ActualApiService) {
         )
     }
 
-    suspend fun fetchCategoryGroups(config: WidgetConfig): CategoryGroupsSnapshot {
-        val today = LocalDate.now()
+    suspend fun fetchCategoryGroups(config: WidgetConfig, monthOffset: Int = 0): CategoryGroupsSnapshot {
+        val today = LocalDate.now().plusMonths(monthOffset.toLong())
         val thisMonthStr = today.format(MONTH_FORMAT)
         val monthData = api.getBudgetMonth(config.budgetId, thisMonthStr).data
 
@@ -86,8 +86,8 @@ class BudgetRepository(private val api: ActualApiService) {
     }
 
     /** Flat list of individual categories — one entry per category, respecting hidden filters. */
-    suspend fun fetchIndividualCategories(config: WidgetConfig): CategoryGroupsSnapshot {
-        val today = LocalDate.now()
+    suspend fun fetchIndividualCategories(config: WidgetConfig, monthOffset: Int = 0): CategoryGroupsSnapshot {
+        val today = LocalDate.now().plusMonths(monthOffset.toLong())
         val thisMonthStr = today.format(MONTH_FORMAT)
         val monthData = api.getBudgetMonth(config.budgetId, thisMonthStr).data
 

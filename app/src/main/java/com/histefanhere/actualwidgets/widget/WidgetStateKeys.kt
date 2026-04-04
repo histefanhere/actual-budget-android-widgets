@@ -18,6 +18,8 @@ object WidgetStateKeys {
     val SHOW_CENTS           = booleanPreferencesKey("show_cents")
     /** Comma-separated [com.histefanhere.actualwidgets.model.BudgetStat] names. Empty = all visible. */
     val VISIBLE_BUDGET_STATS = stringPreferencesKey("visible_budget_stats")
+    /** Month offset from current month: 0 = current, -1 = last month, +1 = next month. */
+    val MONTH_OFFSET = intPreferencesKey("month_offset")
 }
 
 const val STATE_LOADING = "loading"

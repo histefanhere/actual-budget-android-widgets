@@ -17,4 +17,6 @@ object CategoryWidgetStateKeys {
     val SHOW_PROGRESS_BARS = booleanPreferencesKey("show_progress_bars")
     val CATEGORY_ROW_FORMAT = stringPreferencesKey("category_row_format")
     val BAR_SCALE_MODE      = stringPreferencesKey("bar_scale_mode")
+    /** Month offset from current month: 0 = current, -1 = last month, +1 = next month. */
+    val MONTH_OFFSET = intPreferencesKey("month_offset")
 }
