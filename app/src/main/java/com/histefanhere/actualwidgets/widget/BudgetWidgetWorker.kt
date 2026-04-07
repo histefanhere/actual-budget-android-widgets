@@ -67,7 +67,7 @@ class BudgetWidgetWorker(
         } catch (e: Exception) {
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[WidgetStateKeys.STATE_TYPE] = STATE_ERROR
-                prefs[WidgetStateKeys.ERROR_MESSAGE] = e.message ?: "Network error"
+                prefs[WidgetStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
                 prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()

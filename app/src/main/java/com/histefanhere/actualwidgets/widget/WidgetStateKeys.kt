@@ -3,6 +3,7 @@ package com.histefanhere.actualwidgets.widget
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import retrofit2.HttpException
 
 /**
  * Keys used to store widget display state inside Glance's per-widget Preferences.
@@ -28,3 +29,16 @@ const val STATE_LOADING = "loading"
 const val STATE_NOT_CONFIGURED = "not_configured"
 const val STATE_ERROR = "error"
 const val STATE_SUCCESS = "success"
+
+/**
+ * Returns a human-readable error message.
+ * For HTTP errors, includes the status code and the server's response body (if any).
+ */
+fun Exception.toErrorMessage(): String {
+    if (this is HttpException) {
+        val body = runCatching { response()?.errorBody()?.string()?.trim() }.getOrNull()
+            ?.takeIf { it.isNotEmpty() }
+        return "HTTP ${code()}" + if (body != null) ": $body" else ""
+    }
+    return message ?: "Network error"
+}

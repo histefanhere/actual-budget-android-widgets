@@ -72,7 +72,7 @@ class CategoryGroupWidgetWorker(
         } catch (e: Exception) {
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_ERROR
-                prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] = e.message ?: "Network error"
+                prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
                 prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()

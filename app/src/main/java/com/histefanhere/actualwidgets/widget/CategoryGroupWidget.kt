@@ -82,7 +82,12 @@ class CategoryGroupWidget : GlanceAppWidget() {
             GlanceTheme {
                 when (stateType) {
                     STATE_NOT_CONFIGURED -> NotConfiguredContent()
-                    STATE_ERROR -> ErrorContent(prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error")
+                    STATE_ERROR -> {
+                        val sizes = prefs[CategoryWidgetStateKeys.WIDGET_SIZE]
+                            ?.let { runCatching { WidgetSize.valueOf(it) }.getOrNull() }
+                            ?.textSizes ?: WidgetSize.MEDIUM.textSizes
+                        ErrorContent(prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
+                    }
                     STATE_SUCCESS -> {
                         val viewMode = prefs[CategoryWidgetStateKeys.VIEW_MODE]
                             ?.let { runCatching { CategoryViewMode.valueOf(it) }.getOrNull() }
@@ -142,30 +147,30 @@ private fun NotConfiguredContent() {
 }
 
 @Composable
-private fun ErrorContent(message: String) {
+private fun ErrorContent(message: String, sizes: TextSizes) {
     WidgetSurface {
         Column(
-            modifier = GlanceModifier.fillMaxSize().padding(12.dp),
+            modifier = GlanceModifier.fillMaxSize().padding(sizes.paddingDp.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "Error",
-                style = TextStyle(color = ColorNegative, fontSize = 13.sp, fontWeight = FontWeight.Bold),
+                style = TextStyle(color = ColorNegative, fontSize = sizes.headerSp.sp, fontWeight = FontWeight.Bold),
             )
-            Spacer(GlanceModifier.height(4.dp))
+            Spacer(GlanceModifier.height((sizes.paddingDp * 0.5f).dp))
             Text(
                 text = message,
-                style = TextStyle(color = ColorOnSurfaceVariant, fontSize = 11.sp),
+                style = TextStyle(color = ColorOnSurfaceVariant, fontSize = sizes.labelSp.sp),
                 maxLines = 3,
             )
-            Spacer(GlanceModifier.height(10.dp))
+            Spacer(GlanceModifier.height(sizes.paddingDp.dp))
             Image(
                 provider = ImageProvider(R.drawable.ic_refresh),
                 contentDescription = "Retry",
                 colorFilter = ColorFilter.tint(ColorAccent),
                 modifier = GlanceModifier
-                    .size(22.dp)
+                    .size((sizes.headerSp * 1.4f).dp)
                     .clickable(actionRunCallback<CategoryRefreshAction>()),
             )
         }

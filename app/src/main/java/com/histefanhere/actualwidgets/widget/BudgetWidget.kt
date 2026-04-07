@@ -68,7 +68,11 @@ class BudgetWidget : GlanceAppWidget() {
             GlanceTheme {
                 when (stateType) {
                     STATE_NOT_CONFIGURED -> NotConfiguredContent()
-                    STATE_ERROR -> ErrorContent(prefs[WidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error")
+                    STATE_ERROR -> {
+                        val sizeStr = prefs[WidgetStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
+                        val sizes = runCatching { WidgetSize.valueOf(sizeStr) }.getOrDefault(WidgetSize.MEDIUM).textSizes
+                        ErrorContent(prefs[WidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
+                    }
                     STATE_SUCCESS -> {
                         val json = prefs[WidgetStateKeys.SUMMARY_JSON]
                         val summary = json?.let { Gson().fromJson(it, BudgetSummary::class.java) }
@@ -119,10 +123,10 @@ private fun NotConfiguredContent() {
 }
 
 @Composable
-private fun ErrorContent(message: String) {
+private fun ErrorContent(message: String, sizes: TextSizes) {
     WidgetSurface {
         Column(
-            modifier = GlanceModifier.fillMaxSize().padding(12.dp),
+            modifier = GlanceModifier.fillMaxSize().padding(sizes.paddingDp.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -130,23 +134,23 @@ private fun ErrorContent(message: String) {
                 text = "Error",
                 style = TextStyle(
                     color = ColorNegative,
-                    fontSize = 13.sp,
+                    fontSize = sizes.headerSp.sp,
                     fontWeight = FontWeight.Bold,
                 ),
             )
-            Spacer(GlanceModifier.height(4.dp))
+            Spacer(GlanceModifier.height((sizes.paddingDp * 0.5f).dp))
             Text(
                 text = message,
-                style = TextStyle(color = ColorOnSurfaceVariant, fontSize = 11.sp),
+                style = TextStyle(color = ColorOnSurfaceVariant, fontSize = sizes.labelSp.sp),
                 maxLines = 3,
             )
-            Spacer(GlanceModifier.height(10.dp))
+            Spacer(GlanceModifier.height(sizes.paddingDp.dp))
             Image(
                 provider = ImageProvider(R.drawable.ic_refresh),
                 contentDescription = "Retry",
                 colorFilter = ColorFilter.tint(ColorAccent),
                 modifier = GlanceModifier
-                    .size(22.dp)
+                    .size((sizes.headerSp * 1.4f).dp)
                     .clickable(actionRunCallback<RefreshAction>()),
             )
         }
