@@ -267,6 +267,36 @@ private fun WidgetConfigScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Text(
+                        text = "Show Month Arrows",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f).padding(end = 16.dp),
+                    )
+                    Switch(
+                        checked = viewModel.showMonthArrows,
+                        onCheckedChange = { viewModel.showMonthArrows = it },
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        text = "Show Refresh Icon",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f).padding(end = 16.dp),
+                    )
+                    Switch(
+                        checked = viewModel.showRefreshIcon,
+                        onCheckedChange = { viewModel.showRefreshIcon = it },
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
                         text = "Show Cents",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.weight(1f).padding(end = 16.dp),

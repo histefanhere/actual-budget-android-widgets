@@ -39,6 +39,12 @@ class WidgetPrefsStore(private val context: Context) {
     private fun showProgressBarsKey(widgetId: Int) =
         booleanPreferencesKey("config_${widgetId}_show_progress_bars")
 
+    private fun showMonthArrowsKey(widgetId: Int) =
+        booleanPreferencesKey("config_${widgetId}_show_month_arrows")
+
+    private fun showRefreshIconKey(widgetId: Int) =
+        booleanPreferencesKey("config_${widgetId}_show_refresh_icon")
+
     private fun visibleBudgetStatsKey(widgetId: Int) =
         stringSetPreferencesKey("config_${widgetId}_visible_budget_stats")
 
@@ -56,6 +62,8 @@ class WidgetPrefsStore(private val context: Context) {
             prefs[normalizedScaleKey(widgetId)] = config.normalizedScale
             prefs[showCentsKey(widgetId)] = config.showCents
             prefs[showProgressBarsKey(widgetId)] = config.showProgressBars
+            prefs[showMonthArrowsKey(widgetId)] = config.showMonthArrows
+            prefs[showRefreshIconKey(widgetId)] = config.showRefreshIcon
             prefs[key(widgetId, "category_row_format")] = config.categoryRowFormat.name
             prefs[key(widgetId, "bar_scale_mode")] = config.barScaleMode.name
             prefs[visibleBudgetStatsKey(widgetId)] = config.visibleBudgetStats.map { it.name }.toSet()
@@ -84,6 +92,8 @@ class WidgetPrefsStore(private val context: Context) {
             normalizedScale = prefs[normalizedScaleKey(widgetId)] ?: false,
             showCents = prefs[showCentsKey(widgetId)] ?: true,
             showProgressBars = prefs[showProgressBarsKey(widgetId)] ?: true,
+            showMonthArrows = prefs[showMonthArrowsKey(widgetId)] ?: true,
+            showRefreshIcon = prefs[showRefreshIconKey(widgetId)] ?: true,
             categoryRowFormat = prefs[key(widgetId, "category_row_format")]
                 ?.let { runCatching { CategoryRowFormat.valueOf(it) }.getOrNull() }
                 ?: CategoryRowFormat.SPENT_OF_BUDGETED,
@@ -108,6 +118,8 @@ class WidgetPrefsStore(private val context: Context) {
             prefs.remove(normalizedScaleKey(widgetId))
             prefs.remove(showCentsKey(widgetId))
             prefs.remove(showProgressBarsKey(widgetId))
+            prefs.remove(showMonthArrowsKey(widgetId))
+            prefs.remove(showRefreshIconKey(widgetId))
             prefs.remove(key(widgetId, "category_row_format"))
             prefs.remove(key(widgetId, "bar_scale_mode"))
             prefs.remove(visibleBudgetStatsKey(widgetId))

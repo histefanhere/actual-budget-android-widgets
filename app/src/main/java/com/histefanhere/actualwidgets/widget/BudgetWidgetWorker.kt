@@ -57,6 +57,8 @@ class BudgetWidgetWorker(
                 prefs[WidgetStateKeys.SUMMARY_JSON] = Gson().toJson(summary)
                 prefs[WidgetStateKeys.WIDGET_SIZE]          = config.widgetSize.name
                 prefs[WidgetStateKeys.SHOW_CENTS]           = config.showCents
+                prefs[WidgetStateKeys.SHOW_MONTH_ARROWS]    = config.showMonthArrows
+                prefs[WidgetStateKeys.SHOW_REFRESH_ICON]    = config.showRefreshIcon
                 prefs[WidgetStateKeys.VISIBLE_BUDGET_STATS] = config.visibleBudgetStats.joinToString(",") { it.name }
                 prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
                 prefs.remove(WidgetStateKeys.ERROR_MESSAGE)

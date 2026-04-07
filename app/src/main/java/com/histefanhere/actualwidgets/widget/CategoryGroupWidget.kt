@@ -97,6 +97,8 @@ class CategoryGroupWidget : GlanceAppWidget() {
                             ?.textSizes ?: WidgetSize.MEDIUM.textSizes
                         val showCents = prefs[CategoryWidgetStateKeys.SHOW_CENTS] ?: true
                         val showProgressBars = prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS] ?: true
+                        val showMonthArrows = prefs[CategoryWidgetStateKeys.SHOW_MONTH_ARROWS] ?: true
+                        val showRefreshIcon = prefs[CategoryWidgetStateKeys.SHOW_REFRESH_ICON] ?: true
                         val rowFormat = prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT]
                             ?.let { runCatching { CategoryRowFormat.valueOf(it) }.getOrNull() }
                             ?: CategoryRowFormat.SPENT_OF_BUDGETED
@@ -104,7 +106,7 @@ class CategoryGroupWidget : GlanceAppWidget() {
                             ?.let { runCatching { BarScaleMode.valueOf(it) }.getOrNull() }
                             ?: BarScaleMode.SPENT_OF_BUDGETED
                         val snapshot = json?.let { Gson().fromJson(it, CategoryGroupsSnapshot::class.java) }
-                        if (snapshot != null) SuccessContent(snapshot, viewMode, normalizedScale, barScaleMode, sizes, showCents, showProgressBars, rowFormat) else LoadingContent()
+                        if (snapshot != null) SuccessContent(snapshot, viewMode, normalizedScale, barScaleMode, sizes, showCents, showProgressBars, showMonthArrows, showRefreshIcon, rowFormat) else LoadingContent()
                     }
                     else -> LoadingContent()
                 }
@@ -179,6 +181,8 @@ private fun SuccessContent(
     sizes: TextSizes,
     showCents: Boolean,
     showProgressBars: Boolean,
+    showMonthArrows: Boolean,
+    showRefreshIcon: Boolean,
     rowFormat: CategoryRowFormat,
 ) {
     val maxValue: Long = if (normalizedScale) {
@@ -204,30 +208,34 @@ private fun SuccessContent(
                             ),
                             modifier = GlanceModifier.defaultWeight(),
                         )
-                        Image(
-                            provider = ImageProvider(R.drawable.ic_chevron_left),
-                            contentDescription = "Previous month",
-                            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-                            modifier = GlanceModifier
-                                .size((sizes.headerSp * 1.4f).dp)
-                                .clickable(actionRunCallback<CategoryPreviousMonthAction>()),
-                        )
-                        Image(
-                            provider = ImageProvider(R.drawable.ic_chevron_right),
-                            contentDescription = "Next month",
-                            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-                            modifier = GlanceModifier
-                                .size((sizes.headerSp * 1.4f).dp)
-                                .clickable(actionRunCallback<CategoryNextMonthAction>()),
-                        )
-                        Image(
-                            provider = ImageProvider(R.drawable.ic_refresh),
-                            contentDescription = "Refresh",
-                            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-                            modifier = GlanceModifier
-                                .size((sizes.headerSp * 1.4f).dp)
-                                .clickable(actionRunCallback<CategoryRefreshAction>()),
-                        )
+                        if (showMonthArrows) {
+                            Image(
+                                provider = ImageProvider(R.drawable.ic_chevron_left),
+                                contentDescription = "Previous month",
+                                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                                modifier = GlanceModifier
+                                    .size((sizes.headerSp * 1.4f).dp)
+                                    .clickable(actionRunCallback<CategoryPreviousMonthAction>()),
+                            )
+                            Image(
+                                provider = ImageProvider(R.drawable.ic_chevron_right),
+                                contentDescription = "Next month",
+                                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                                modifier = GlanceModifier
+                                    .size((sizes.headerSp * 1.4f).dp)
+                                    .clickable(actionRunCallback<CategoryNextMonthAction>()),
+                            )
+                        }
+                        if (showRefreshIcon) {
+                            Image(
+                                provider = ImageProvider(R.drawable.ic_refresh),
+                                contentDescription = "Refresh",
+                                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                                modifier = GlanceModifier
+                                    .size((sizes.headerSp * 1.4f).dp)
+                                    .clickable(actionRunCallback<CategoryRefreshAction>()),
+                            )
+                        }
                     }
                 }
                 items(snapshot.groups) { group ->

@@ -76,12 +76,14 @@ class BudgetWidget : GlanceAppWidget() {
                         val sizes = runCatching { WidgetSize.valueOf(sizeStr) }
                             .getOrDefault(WidgetSize.MEDIUM).textSizes
                         val showCents = prefs[WidgetStateKeys.SHOW_CENTS] ?: true
+                        val showMonthArrows = prefs[WidgetStateKeys.SHOW_MONTH_ARROWS] ?: true
+                        val showRefreshIcon = prefs[WidgetStateKeys.SHOW_REFRESH_ICON] ?: true
                         val visibleStats = prefs[WidgetStateKeys.VISIBLE_BUDGET_STATS]
                             ?.split(",")
                             ?.mapNotNull { runCatching { BudgetStat.valueOf(it) }.getOrNull() }
                             ?.toSet()
                             ?: BudgetStat.DEFAULT
-                        if (summary != null) SuccessContent(summary, sizes, showCents, visibleStats) else LoadingContent()
+                        if (summary != null) SuccessContent(summary, sizes, showCents, visibleStats, showMonthArrows, showRefreshIcon) else LoadingContent()
                     }
                     else -> LoadingContent()
                 }
@@ -189,15 +191,17 @@ private fun SuccessContent(
     sizes: TextSizes,
     showCents: Boolean,
     visibleStats: Set<BudgetStat>,
+    showMonthArrows: Boolean,
+    showRefreshIcon: Boolean,
 ) {
     val isWide = LocalSize.current.width >= 230.dp
     val statList = BudgetStat.entries.filter { it in visibleStats }
 
     WidgetSurface {
         if (isWide) {
-            WideLayout(summary, sizes, showCents, statList)
+            WideLayout(summary, sizes, showCents, statList, showMonthArrows, showRefreshIcon)
         } else {
-            NarrowLayout(summary, sizes, showCents, statList)
+            NarrowLayout(summary, sizes, showCents, statList, showMonthArrows, showRefreshIcon)
         }
     }
 }
@@ -208,11 +212,13 @@ private fun NarrowLayout(
     sizes: TextSizes,
     showCents: Boolean,
     statList: List<BudgetStat>,
+    showMonthArrows: Boolean,
+    showRefreshIcon: Boolean,
 ) {
     Column(modifier = GlanceModifier.fillMaxSize().padding(sizes.paddingDp.dp)) {
         LazyColumn(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
             item {
-                StatHeader(summary, sizes, GlanceModifier.padding(bottom = (sizes.paddingDp * 0.75f).dp))
+                StatHeader(summary, sizes, showMonthArrows, showRefreshIcon, GlanceModifier.padding(bottom = (sizes.paddingDp * 0.75f).dp))
             }
             statList.forEach { stat ->
                 item {
@@ -238,11 +244,13 @@ private fun WideLayout(
     sizes: TextSizes,
     showCents: Boolean,
     statList: List<BudgetStat>,
+    showMonthArrows: Boolean,
+    showRefreshIcon: Boolean,
 ) {
     Column(modifier = GlanceModifier.fillMaxSize().padding(sizes.paddingDp.dp)) {
         LazyColumn(modifier = GlanceModifier.fillMaxWidth().defaultWeight()) {
             item {
-                StatHeader(summary, sizes, GlanceModifier.padding(bottom = (sizes.paddingDp * 0.75f).dp))
+                StatHeader(summary, sizes, showMonthArrows, showRefreshIcon, GlanceModifier.padding(bottom = (sizes.paddingDp * 0.75f).dp))
             }
             // Pair up consecutive stats so each row holds two side-by-side StatColumns
             statList.chunked(2).forEach { pair ->
@@ -276,7 +284,13 @@ private fun WideLayout(
 }
 
 @Composable
-private fun StatHeader(summary: BudgetSummary, sizes: TextSizes, modifier: GlanceModifier = GlanceModifier) {
+private fun StatHeader(
+    summary: BudgetSummary,
+    sizes: TextSizes,
+    showMonthArrows: Boolean,
+    showRefreshIcon: Boolean,
+    modifier: GlanceModifier = GlanceModifier,
+) {
     Row(
         modifier = GlanceModifier.fillMaxWidth().then(modifier),
         verticalAlignment = Alignment.CenterVertically,
@@ -286,30 +300,34 @@ private fun StatHeader(summary: BudgetSummary, sizes: TextSizes, modifier: Glanc
             fontSize = sizes.headerSp,
             modifier = GlanceModifier.defaultWeight(),
         )
-        Image(
-            provider = ImageProvider(R.drawable.ic_chevron_left),
-            contentDescription = "Previous month",
-            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-            modifier = GlanceModifier
-                .size((sizes.headerSp * 1.4f).dp)
-                .clickable(actionRunCallback<PreviousMonthAction>()),
-        )
-        Image(
-            provider = ImageProvider(R.drawable.ic_chevron_right),
-            contentDescription = "Next month",
-            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-            modifier = GlanceModifier
-                .size((sizes.headerSp * 1.4f).dp)
-                .clickable(actionRunCallback<NextMonthAction>()),
-        )
-        Image(
-            provider = ImageProvider(R.drawable.ic_refresh),
-            contentDescription = "Refresh",
-            colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
-            modifier = GlanceModifier
-                .size((sizes.headerSp * 1.4f).dp)
-                .clickable(actionRunCallback<RefreshAction>()),
-        )
+        if (showMonthArrows) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_chevron_left),
+                contentDescription = "Previous month",
+                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                modifier = GlanceModifier
+                    .size((sizes.headerSp * 1.4f).dp)
+                    .clickable(actionRunCallback<PreviousMonthAction>()),
+            )
+            Image(
+                provider = ImageProvider(R.drawable.ic_chevron_right),
+                contentDescription = "Next month",
+                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                modifier = GlanceModifier
+                    .size((sizes.headerSp * 1.4f).dp)
+                    .clickable(actionRunCallback<NextMonthAction>()),
+            )
+        }
+        if (showRefreshIcon) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_refresh),
+                contentDescription = "Refresh",
+                colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
+                modifier = GlanceModifier
+                    .size((sizes.headerSp * 1.4f).dp)
+                    .clickable(actionRunCallback<RefreshAction>()),
+            )
+        }
     }
 }
 

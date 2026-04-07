@@ -65,6 +65,8 @@ class WidgetConfigViewModel(
     var normalizedScale by mutableStateOf(false)
     var showCents by mutableStateOf(true)
     var showProgressBars by mutableStateOf(true)
+    var showMonthArrows by mutableStateOf(true)
+    var showRefreshIcon by mutableStateOf(true)
     var visibleBudgetStats by mutableStateOf(BudgetStat.DEFAULT)
     var isLoadingGroups by mutableStateOf(false)
     var groupLoadError by mutableStateOf<String?>(null)
@@ -95,6 +97,8 @@ class WidgetConfigViewModel(
             normalizedScale = existing.normalizedScale
             showCents = existing.showCents
             showProgressBars = existing.showProgressBars
+            showMonthArrows = existing.showMonthArrows
+            showRefreshIcon = existing.showRefreshIcon
             visibleBudgetStats = existing.visibleBudgetStats
             if (selectedBudgetName.isNotEmpty()) {
                 budgets = listOf(BudgetFile(selectedBudgetId, selectedBudgetName))
@@ -145,6 +149,8 @@ class WidgetConfigViewModel(
                 normalizedScale = normalizedScale,
                 showCents = showCents,
                 showProgressBars = showProgressBars,
+                showMonthArrows = showMonthArrows,
+                showRefreshIcon = showRefreshIcon,
                 visibleBudgetStats = visibleBudgetStats,
             )
             prefsStore.saveConfig(appWidgetId, config)
@@ -180,6 +186,8 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showMonthArrows = showMonthArrows,
+                    showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
                 ),
             )
@@ -254,6 +262,8 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = enabled,
                     showCents = showCents,
+                    showMonthArrows = showMonthArrows,
+                    showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
                 ),
             )
@@ -287,6 +297,8 @@ class WidgetConfigViewModel(
                     barScaleMode = mode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showMonthArrows = showMonthArrows,
+                    showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
                 ),
             )
@@ -320,6 +332,8 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showMonthArrows = showMonthArrows,
+                    showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
                 ),
             )

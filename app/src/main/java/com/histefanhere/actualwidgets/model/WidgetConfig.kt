@@ -21,6 +21,10 @@ data class WidgetConfig(
     val showCents: Boolean = true,
     /** When false, the spending progress bars are hidden in the category widget. */
     val showProgressBars: Boolean = true,
+    /** When false, the previous/next month arrows are hidden in the widget header. */
+    val showMonthArrows: Boolean = true,
+    /** When false, the refresh icon is hidden in the widget header. */
+    val showRefreshIcon: Boolean = true,
     /** Which stats appear on the budget summary widget, in fixed enum declaration order. */
     val visibleBudgetStats: Set<BudgetStat> = BudgetStat.DEFAULT,
 )

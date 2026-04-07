@@ -61,6 +61,8 @@ class CategoryGroupWidgetWorker(
                 prefs[CategoryWidgetStateKeys.WIDGET_SIZE] = config.widgetSize.name
                 prefs[CategoryWidgetStateKeys.SHOW_CENTS]          = config.showCents
                 prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS]  = config.showProgressBars
+                prefs[CategoryWidgetStateKeys.SHOW_MONTH_ARROWS]   = config.showMonthArrows
+                prefs[CategoryWidgetStateKeys.SHOW_REFRESH_ICON]   = config.showRefreshIcon
                 prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT] = config.categoryRowFormat.name
                 prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]      = config.barScaleMode.name
                 prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
