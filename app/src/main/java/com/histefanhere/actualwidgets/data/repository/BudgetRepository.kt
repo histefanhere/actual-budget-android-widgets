@@ -8,7 +8,7 @@ import com.histefanhere.actualwidgets.model.BudgetSummary
 import com.histefanhere.actualwidgets.model.CategoryGroupEntry
 import com.histefanhere.actualwidgets.model.CategoryGroupInfo
 import com.histefanhere.actualwidgets.model.CategoryGroupWithCategories
-import com.histefanhere.actualwidgets.model.CategoryGroupsSnapshot
+import com.histefanhere.actualwidgets.model.CategoryBreakdownSnapshot
 import com.histefanhere.actualwidgets.model.CategoryInfo
 import com.histefanhere.actualwidgets.model.WidgetConfig
 import java.time.LocalDate
@@ -41,7 +41,7 @@ class BudgetRepository(private val api: ActualApiService) {
         )
     }
 
-    suspend fun fetchCategoryGroups(config: WidgetConfig, monthOffset: Int = 0): CategoryGroupsSnapshot {
+    suspend fun fetchCategoryGroups(config: WidgetConfig, monthOffset: Int = 0): CategoryBreakdownSnapshot {
         val today = LocalDate.now().plusMonths(monthOffset.toLong())
         val thisMonthStr = today.format(MONTH_FORMAT)
         val monthData = api.getBudgetMonth(config.budgetId, thisMonthStr).data
@@ -59,7 +59,7 @@ class BudgetRepository(private val api: ActualApiService) {
             }
             ?: emptyList()
 
-        return CategoryGroupsSnapshot(
+        return CategoryBreakdownSnapshot(
             currencySymbol = config.currencySymbol,
             monthLabel = formatMonthLabel(thisMonthStr),
             groups = groups,
@@ -86,7 +86,7 @@ class BudgetRepository(private val api: ActualApiService) {
     }
 
     /** Flat list of individual categories — one entry per category, respecting hidden filters. */
-    suspend fun fetchIndividualCategories(config: WidgetConfig, monthOffset: Int = 0): CategoryGroupsSnapshot {
+    suspend fun fetchIndividualCategories(config: WidgetConfig, monthOffset: Int = 0): CategoryBreakdownSnapshot {
         val today = LocalDate.now().plusMonths(monthOffset.toLong())
         val thisMonthStr = today.format(MONTH_FORMAT)
         val monthData = api.getBudgetMonth(config.budgetId, thisMonthStr).data
@@ -107,7 +107,7 @@ class BudgetRepository(private val api: ActualApiService) {
             }
             ?: emptyList()
 
-        return CategoryGroupsSnapshot(
+        return CategoryBreakdownSnapshot(
             currencySymbol = config.currencySymbol,
             monthLabel = formatMonthLabel(thisMonthStr),
             groups = entries,

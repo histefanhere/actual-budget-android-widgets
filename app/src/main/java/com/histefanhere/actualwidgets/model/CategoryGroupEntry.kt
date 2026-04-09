@@ -17,7 +17,7 @@ data class CategoryGroupEntry(
     val balance: Long,   // cents; may include carryover from previous months
 )
 
-data class CategoryGroupsSnapshot(
+data class CategoryBreakdownSnapshot(
     val currencySymbol: String,
     val monthLabel: String,
     val groups: List<CategoryGroupEntry>,

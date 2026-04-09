@@ -19,20 +19,20 @@ import com.histefanhere.actualwidgets.model.BudgetStat
 import com.histefanhere.actualwidgets.model.CategoryGroupWithCategories
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
 import com.histefanhere.actualwidgets.model.CategoryViewMode
-import com.histefanhere.actualwidgets.widget.CategoryWidgetStateKeys
+import com.histefanhere.actualwidgets.widget.CategoryBreakdownStateKeys
 import com.histefanhere.actualwidgets.data.prefs.WidgetPrefsStore
 import com.histefanhere.actualwidgets.data.repository.BudgetRepository
 import com.histefanhere.actualwidgets.model.WidgetConfig
 import com.histefanhere.actualwidgets.model.WidgetSize
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
-import com.histefanhere.actualwidgets.widget.BudgetWidget
-import com.histefanhere.actualwidgets.widget.BudgetWidgetReceiver
-import com.histefanhere.actualwidgets.widget.BudgetWidgetWorker
-import com.histefanhere.actualwidgets.widget.CategoryGroupWidget
-import com.histefanhere.actualwidgets.widget.CategoryGroupWidgetReceiver
-import com.histefanhere.actualwidgets.widget.CategoryGroupWidgetWorker
-import com.histefanhere.actualwidgets.widget.WidgetStateKeys
+import com.histefanhere.actualwidgets.widget.MonthlySummaryWidget
+import com.histefanhere.actualwidgets.widget.MonthlySummaryWidgetReceiver
+import com.histefanhere.actualwidgets.widget.MonthlySummaryWidgetWorker
+import com.histefanhere.actualwidgets.widget.CategoryBreakdownWidget
+import com.histefanhere.actualwidgets.widget.CategoryBreakdownWidgetReceiver
+import com.histefanhere.actualwidgets.widget.CategoryBreakdownWidgetWorker
+import com.histefanhere.actualwidgets.widget.MonthlySummaryStateKeys
 import kotlinx.coroutines.launch
 
 class WidgetConfigViewModel(
@@ -40,9 +40,9 @@ class WidgetConfigViewModel(
     private val appWidgetId: Int,
 ) : AndroidViewModel(application) {
 
-    val isBudgetWidget: Boolean = AppWidgetManager.getInstance(application)
+    val isMonthlySummaryWidget: Boolean = AppWidgetManager.getInstance(application)
         .getAppWidgetInfo(appWidgetId)
-        ?.provider?.className?.contains("CategoryGroup") != true
+        ?.provider?.className?.contains("CategoryBreakdown") != true
 
     private val prefsStore = WidgetPrefsStore(application)
 
@@ -103,7 +103,7 @@ class WidgetConfigViewModel(
             if (selectedBudgetName.isNotEmpty()) {
                 budgets = listOf(BudgetFile(selectedBudgetId, selectedBudgetName))
             }
-            if (!isBudgetWidget && selectedBudgetId.isNotEmpty()) {
+            if (!isMonthlySummaryWidget && selectedBudgetId.isNotEmpty()) {
                 fetchGroupsForConfig()
             }
         }
@@ -121,7 +121,7 @@ class WidgetConfigViewModel(
                     selectedBudgetId = budgets[0].groupId
                     selectedBudgetName = budgets[0].name
                 }
-                if (!isBudgetWidget) fetchGroupsForConfig()
+                if (!isMonthlySummaryWidget) fetchGroupsForConfig()
             } catch (e: Exception) {
                 budgetLoadError = "Failed to fetch budgets: ${e.message}"
             } finally {
@@ -154,12 +154,12 @@ class WidgetConfigViewModel(
                 visibleBudgetStats = visibleBudgetStats,
             )
             prefsStore.saveConfig(appWidgetId, config)
-            if (isBudgetWidget) {
-                BudgetWidgetWorker.enqueueOneTimeWork(getApplication(), appWidgetId)
-                BudgetWidgetWorker.enqueuePeriodicWork(getApplication(), appWidgetId)
+            if (isMonthlySummaryWidget) {
+                MonthlySummaryWidgetWorker.enqueueOneTimeWork(getApplication(), appWidgetId)
+                MonthlySummaryWidgetWorker.enqueuePeriodicWork(getApplication(), appWidgetId)
             } else {
-                CategoryGroupWidgetWorker.enqueueOneTimeWork(getApplication(), appWidgetId)
-                CategoryGroupWidgetWorker.enqueuePeriodicWork(getApplication(), appWidgetId)
+                CategoryBreakdownWidgetWorker.enqueueOneTimeWork(getApplication(), appWidgetId)
+                CategoryBreakdownWidgetWorker.enqueuePeriodicWork(getApplication(), appWidgetId)
             }
             isSaving = false
             onSuccess()
@@ -195,13 +195,13 @@ class WidgetConfigViewModel(
                 ?: return@launch
             updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
                 current.toMutablePreferences().apply {
-                    this[WidgetStateKeys.WIDGET_SIZE] = size.name
+                    this[MonthlySummaryStateKeys.WIDGET_SIZE] = size.name
                 }
             }
-            if (isBudgetWidget) {
-                BudgetWidget().update(getApplication(), glanceId)
+            if (isMonthlySummaryWidget) {
+                MonthlySummaryWidget().update(getApplication(), glanceId)
             } else {
-                CategoryGroupWidget().update(getApplication(), glanceId)
+                CategoryBreakdownWidget().update(getApplication(), glanceId)
             }
         }
     }
@@ -271,10 +271,10 @@ class WidgetConfigViewModel(
                 ?: return@launch
             updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
                 current.toMutablePreferences().apply {
-                    this[CategoryWidgetStateKeys.NORMALIZED_SCALE] = enabled
+                    this[CategoryBreakdownStateKeys.NORMALIZED_SCALE] = enabled
                 }
             }
-            CategoryGroupWidget().update(getApplication(), glanceId)
+            CategoryBreakdownWidget().update(getApplication(), glanceId)
         }
     }
 
@@ -306,10 +306,10 @@ class WidgetConfigViewModel(
                 ?: return@launch
             updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
                 current.toMutablePreferences().apply {
-                    this[CategoryWidgetStateKeys.BAR_SCALE_MODE] = mode.name
+                    this[CategoryBreakdownStateKeys.BAR_SCALE_MODE] = mode.name
                 }
             }
-            CategoryGroupWidget().update(getApplication(), glanceId)
+            CategoryBreakdownWidget().update(getApplication(), glanceId)
         }
     }
 
@@ -341,18 +341,18 @@ class WidgetConfigViewModel(
                 ?: return@launch
             updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
                 current.toMutablePreferences().apply {
-                    this[CategoryWidgetStateKeys.VIEW_MODE] = mode.name
+                    this[CategoryBreakdownStateKeys.VIEW_MODE] = mode.name
                 }
             }
-            CategoryGroupWidget().update(getApplication(), glanceId)
+            CategoryBreakdownWidget().update(getApplication(), glanceId)
         }
     }
 
     private suspend fun loadConnectionDefaults() {
         val appWidgetManager = AppWidgetManager.getInstance(getApplication())
         val providers = listOf(
-            ComponentName(getApplication(), BudgetWidgetReceiver::class.java),
-            ComponentName(getApplication(), CategoryGroupWidgetReceiver::class.java),
+            ComponentName(getApplication(), MonthlySummaryWidgetReceiver::class.java),
+            ComponentName(getApplication(), CategoryBreakdownWidgetReceiver::class.java),
         )
         for (provider in providers) {
             for (id in appWidgetManager.getAppWidgetIds(provider)) {

@@ -8,20 +8,20 @@ import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 
-class CategoryNextMonthAction : ActionCallback {
+class MonthlySummaryNextMonthAction : ActionCallback {
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
         parameters: ActionParameters,
     ) {
         val prefs = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
-        val appWidgetId = prefs[CategoryWidgetStateKeys.APP_WIDGET_ID] ?: return
-        val currentOffset = prefs[CategoryWidgetStateKeys.MONTH_OFFSET] ?: 0
+        val appWidgetId = prefs[MonthlySummaryStateKeys.APP_WIDGET_ID] ?: return
+        val currentOffset = prefs[MonthlySummaryStateKeys.MONTH_OFFSET] ?: 0
         updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) {
             it.toMutablePreferences().apply {
-                this[CategoryWidgetStateKeys.MONTH_OFFSET] = currentOffset + 1
+                this[MonthlySummaryStateKeys.MONTH_OFFSET] = currentOffset + 1
             }
         }
-        CategoryGroupWidgetWorker.enqueueOneTimeWork(context, appWidgetId)
+        MonthlySummaryWidgetWorker.enqueueOneTimeWork(context, appWidgetId)
     }
 }

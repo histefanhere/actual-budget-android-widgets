@@ -3,12 +3,12 @@ package com.histefanhere.actualwidgets.widget
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import retrofit2.HttpException
 
 /**
- * Keys used to store widget display state inside Glance's per-widget Preferences.
+ * Keys used to store the Monthly Summary widget's display state inside
+ * Glance's per-widget Preferences.
  */
-object WidgetStateKeys {
+object MonthlySummaryStateKeys {
     val STATE_TYPE = stringPreferencesKey("state_type")
     val ERROR_MESSAGE = stringPreferencesKey("error_message")
     val SUMMARY_JSON = stringPreferencesKey("summary_json")
@@ -23,22 +23,4 @@ object WidgetStateKeys {
     val VISIBLE_BUDGET_STATS = stringPreferencesKey("visible_budget_stats")
     /** Month offset from current month: 0 = current, -1 = last month, +1 = next month. */
     val MONTH_OFFSET = intPreferencesKey("month_offset")
-}
-
-const val STATE_LOADING = "loading"
-const val STATE_NOT_CONFIGURED = "not_configured"
-const val STATE_ERROR = "error"
-const val STATE_SUCCESS = "success"
-
-/**
- * Returns a human-readable error message.
- * For HTTP errors, includes the status code and the server's response body (if any).
- */
-fun Exception.toErrorMessage(): String {
-    if (this is HttpException) {
-        val body = runCatching { response()?.errorBody()?.string()?.trim() }.getOrNull()
-            ?.takeIf { it.isNotEmpty() }
-        return "HTTP ${code()}" + if (body != null) ": $body" else ""
-    }
-    return message ?: "Network error"
 }

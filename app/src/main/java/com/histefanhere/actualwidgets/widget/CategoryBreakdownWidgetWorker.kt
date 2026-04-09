@@ -23,7 +23,7 @@ import com.histefanhere.actualwidgets.data.prefs.WidgetPrefsStore
 import com.histefanhere.actualwidgets.data.repository.BudgetRepository
 import java.util.concurrent.TimeUnit
 
-class CategoryGroupWidgetWorker(
+class CategoryBreakdownWidgetWorker(
     private val context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
@@ -36,13 +36,13 @@ class CategoryGroupWidgetWorker(
             ?: return Result.failure()
 
         val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
-            .let { it[CategoryWidgetStateKeys.MONTH_OFFSET] ?: 0 }
+            .let { it[CategoryBreakdownStateKeys.MONTH_OFFSET] ?: 0 }
 
         val config = WidgetPrefsStore(context).getConfig(appWidgetId)
         if (config == null) {
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_NOT_CONFIGURED
-                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
+                prefs[CategoryBreakdownStateKeys.STATE_TYPE] = WidgetState.NOT_CONFIGURED
+                prefs[CategoryBreakdownStateKeys.MONTH_OFFSET] = monthOffset
             }
             return Result.success()
         }
@@ -53,27 +53,27 @@ class CategoryGroupWidgetWorker(
             val categoriesSnapshot = repo.fetchIndividualCategories(config, monthOffset)
 
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_SUCCESS
-                prefs[CategoryWidgetStateKeys.GROUPS_JSON] = Gson().toJson(groupsSnapshot)
-                prefs[CategoryWidgetStateKeys.CATEGORIES_JSON] = Gson().toJson(categoriesSnapshot)
-                prefs[CategoryWidgetStateKeys.VIEW_MODE] = config.categoryViewMode.name
-                prefs[CategoryWidgetStateKeys.NORMALIZED_SCALE] = config.normalizedScale
-                prefs[CategoryWidgetStateKeys.WIDGET_SIZE] = config.widgetSize.name
-                prefs[CategoryWidgetStateKeys.SHOW_CENTS]          = config.showCents
-                prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS]  = config.showProgressBars
-                prefs[CategoryWidgetStateKeys.SHOW_MONTH_ARROWS]   = config.showMonthArrows
-                prefs[CategoryWidgetStateKeys.SHOW_REFRESH_ICON]   = config.showRefreshIcon
-                prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT] = config.categoryRowFormat.name
-                prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]      = config.barScaleMode.name
-                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
-                prefs.remove(CategoryWidgetStateKeys.ERROR_MESSAGE)
+                prefs[CategoryBreakdownStateKeys.STATE_TYPE] = WidgetState.SUCCESS
+                prefs[CategoryBreakdownStateKeys.GROUPS_JSON] = Gson().toJson(groupsSnapshot)
+                prefs[CategoryBreakdownStateKeys.CATEGORIES_JSON] = Gson().toJson(categoriesSnapshot)
+                prefs[CategoryBreakdownStateKeys.VIEW_MODE] = config.categoryViewMode.name
+                prefs[CategoryBreakdownStateKeys.NORMALIZED_SCALE] = config.normalizedScale
+                prefs[CategoryBreakdownStateKeys.WIDGET_SIZE] = config.widgetSize.name
+                prefs[CategoryBreakdownStateKeys.SHOW_CENTS]          = config.showCents
+                prefs[CategoryBreakdownStateKeys.SHOW_PROGRESS_BARS]  = config.showProgressBars
+                prefs[CategoryBreakdownStateKeys.SHOW_MONTH_ARROWS]   = config.showMonthArrows
+                prefs[CategoryBreakdownStateKeys.SHOW_REFRESH_ICON]   = config.showRefreshIcon
+                prefs[CategoryBreakdownStateKeys.CATEGORY_ROW_FORMAT] = config.categoryRowFormat.name
+                prefs[CategoryBreakdownStateKeys.BAR_SCALE_MODE]      = config.barScaleMode.name
+                prefs[CategoryBreakdownStateKeys.MONTH_OFFSET] = monthOffset
+                prefs.remove(CategoryBreakdownStateKeys.ERROR_MESSAGE)
             }
             Result.success()
         } catch (e: Exception) {
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[CategoryWidgetStateKeys.STATE_TYPE] = STATE_ERROR
-                prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
-                prefs[CategoryWidgetStateKeys.MONTH_OFFSET] = monthOffset
+                prefs[CategoryBreakdownStateKeys.STATE_TYPE] = WidgetState.ERROR
+                prefs[CategoryBreakdownStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
+                prefs[CategoryBreakdownStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()
         }
@@ -86,16 +86,16 @@ class CategoryGroupWidgetWorker(
     ) {
         updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { current ->
             current.toMutablePreferences().apply {
-                this[CategoryWidgetStateKeys.APP_WIDGET_ID] = appWidgetId
+                this[CategoryBreakdownStateKeys.APP_WIDGET_ID] = appWidgetId
                 block(this)
             }
         }
-        CategoryGroupWidget().update(context, glanceId)
+        CategoryBreakdownWidget().update(context, glanceId)
     }
 
     companion object {
         private const val KEY_WIDGET_ID = "widget_id"
-        private const val WORK_PREFIX = "actual_category_widget"
+        private const val WORK_PREFIX = "category_breakdown_widget"
 
         private fun periodicWorkName(widgetId: Int) = "${WORK_PREFIX}_periodic_$widgetId"
         private fun networkConstraints() = Constraints.Builder()
@@ -103,7 +103,7 @@ class CategoryGroupWidgetWorker(
             .build()
 
         fun enqueueOneTimeWork(context: Context, appWidgetId: Int) {
-            val request = OneTimeWorkRequestBuilder<CategoryGroupWidgetWorker>()
+            val request = OneTimeWorkRequestBuilder<CategoryBreakdownWidgetWorker>()
                 .setInputData(Data.Builder().putInt(KEY_WIDGET_ID, appWidgetId).build())
                 .setConstraints(networkConstraints())
                 .build()
@@ -111,7 +111,7 @@ class CategoryGroupWidgetWorker(
         }
 
         fun enqueuePeriodicWork(context: Context, appWidgetId: Int) {
-            val request = PeriodicWorkRequestBuilder<CategoryGroupWidgetWorker>(30, TimeUnit.MINUTES)
+            val request = PeriodicWorkRequestBuilder<CategoryBreakdownWidgetWorker>(30, TimeUnit.MINUTES)
                 .setInputData(Data.Builder().putInt(KEY_WIDGET_ID, appWidgetId).build())
                 .setConstraints(networkConstraints())
                 .build()

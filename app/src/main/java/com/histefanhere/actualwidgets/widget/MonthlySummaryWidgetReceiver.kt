@@ -9,9 +9,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CategoryGroupWidgetReceiver : GlanceAppWidgetReceiver() {
+class MonthlySummaryWidgetReceiver : GlanceAppWidgetReceiver() {
 
-    override val glanceAppWidget: GlanceAppWidget = CategoryGroupWidget()
+    override val glanceAppWidget: GlanceAppWidget = MonthlySummaryWidget()
 
     override fun onUpdate(
         context: Context,
@@ -20,14 +20,14 @@ class CategoryGroupWidgetReceiver : GlanceAppWidgetReceiver() {
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         appWidgetIds.forEach { id ->
-            CategoryGroupWidgetWorker.enqueueOneTimeWork(context, id)
-            CategoryGroupWidgetWorker.enqueuePeriodicWork(context, id)
+            MonthlySummaryWidgetWorker.enqueueOneTimeWork(context, id)
+            MonthlySummaryWidgetWorker.enqueuePeriodicWork(context, id)
         }
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         appWidgetIds.forEach { id ->
-            CategoryGroupWidgetWorker.cancelWork(context, id)
+            MonthlySummaryWidgetWorker.cancelWork(context, id)
             CoroutineScope(Dispatchers.IO).launch {
                 WidgetPrefsStore(context).clearConfig(id)
             }
