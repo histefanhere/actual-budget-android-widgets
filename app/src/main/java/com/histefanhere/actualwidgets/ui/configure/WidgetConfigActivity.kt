@@ -229,7 +229,7 @@ private fun WidgetConfigScreen(
                                         viewModel.selectedBudgetId = budget.groupId
                                         viewModel.selectedBudgetName = budget.name
                                         expanded = false
-                                        if (!viewModel.isBudgetWidget) viewModel.fetchGroupsForConfig()
+                                        if (!viewModel.isMonthlySummaryWidget) viewModel.fetchGroupsForConfig()
                                     },
                                 )
                             }
@@ -309,7 +309,7 @@ private fun WidgetConfigScreen(
             }
 
             // ── Section 3: Content (budget widget only) ───────────────────────
-            if (viewModel.isBudgetWidget) {
+            if (viewModel.isMonthlySummaryWidget) {
                 ConfigSection(title = "Content") {
                     SectionLabel("Visible Stats")
                     FieldHint("Choose which figures appear on the widget. Order is fixed.")
@@ -342,7 +342,7 @@ private fun WidgetConfigScreen(
             }
 
             // ── Section 3/4: Display (category widget only) ───────────────────
-            if (!viewModel.isBudgetWidget) {
+            if (!viewModel.isMonthlySummaryWidget) {
                 ConfigSection(title = "Display") {
                     // ── View ──────────────────────────────────────────────────
                     SectionLabel("View")

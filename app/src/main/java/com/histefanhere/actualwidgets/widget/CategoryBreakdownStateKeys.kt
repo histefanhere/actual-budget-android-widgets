@@ -4,7 +4,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 
-object CategoryWidgetStateKeys {
+/**
+ * Keys used to store the Category Breakdown widget's display state inside
+ * Glance's per-widget Preferences.
+ */
+object CategoryBreakdownStateKeys {
     val STATE_TYPE    = stringPreferencesKey("state_type")
     val ERROR_MESSAGE = stringPreferencesKey("error_message")
     val GROUPS_JSON      = stringPreferencesKey("groups_json")

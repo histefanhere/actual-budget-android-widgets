@@ -23,7 +23,7 @@ import com.histefanhere.actualwidgets.data.prefs.WidgetPrefsStore
 import com.histefanhere.actualwidgets.data.repository.BudgetRepository
 import java.util.concurrent.TimeUnit
 
-class BudgetWidgetWorker(
+class MonthlySummaryWidgetWorker(
     private val context: Context,
     params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
@@ -36,13 +36,13 @@ class BudgetWidgetWorker(
             ?: return Result.failure()
 
         val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
-            .let { it[WidgetStateKeys.MONTH_OFFSET] ?: 0 }
+            .let { it[MonthlySummaryStateKeys.MONTH_OFFSET] ?: 0 }
 
         val config = WidgetPrefsStore(context).getConfig(appWidgetId)
         if (config == null) {
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[WidgetStateKeys.STATE_TYPE] = STATE_NOT_CONFIGURED
-                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
+                prefs[MonthlySummaryStateKeys.STATE_TYPE] = WidgetState.NOT_CONFIGURED
+                prefs[MonthlySummaryStateKeys.MONTH_OFFSET] = monthOffset
             }
             return Result.success()
         }
@@ -53,22 +53,22 @@ class BudgetWidgetWorker(
             ).fetchBudgetSummary(config, monthOffset)
 
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[WidgetStateKeys.STATE_TYPE] = STATE_SUCCESS
-                prefs[WidgetStateKeys.SUMMARY_JSON] = Gson().toJson(summary)
-                prefs[WidgetStateKeys.WIDGET_SIZE]          = config.widgetSize.name
-                prefs[WidgetStateKeys.SHOW_CENTS]           = config.showCents
-                prefs[WidgetStateKeys.SHOW_MONTH_ARROWS]    = config.showMonthArrows
-                prefs[WidgetStateKeys.SHOW_REFRESH_ICON]    = config.showRefreshIcon
-                prefs[WidgetStateKeys.VISIBLE_BUDGET_STATS] = config.visibleBudgetStats.joinToString(",") { it.name }
-                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
-                prefs.remove(WidgetStateKeys.ERROR_MESSAGE)
+                prefs[MonthlySummaryStateKeys.STATE_TYPE] = WidgetState.SUCCESS
+                prefs[MonthlySummaryStateKeys.SUMMARY_JSON] = Gson().toJson(summary)
+                prefs[MonthlySummaryStateKeys.WIDGET_SIZE]          = config.widgetSize.name
+                prefs[MonthlySummaryStateKeys.SHOW_CENTS]           = config.showCents
+                prefs[MonthlySummaryStateKeys.SHOW_MONTH_ARROWS]    = config.showMonthArrows
+                prefs[MonthlySummaryStateKeys.SHOW_REFRESH_ICON]    = config.showRefreshIcon
+                prefs[MonthlySummaryStateKeys.VISIBLE_BUDGET_STATS] = config.visibleBudgetStats.joinToString(",") { it.name }
+                prefs[MonthlySummaryStateKeys.MONTH_OFFSET] = monthOffset
+                prefs.remove(MonthlySummaryStateKeys.ERROR_MESSAGE)
             }
             Result.success()
         } catch (e: Exception) {
             setState(glanceId, appWidgetId) { prefs ->
-                prefs[WidgetStateKeys.STATE_TYPE] = STATE_ERROR
-                prefs[WidgetStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
-                prefs[WidgetStateKeys.MONTH_OFFSET] = monthOffset
+                prefs[MonthlySummaryStateKeys.STATE_TYPE] = WidgetState.ERROR
+                prefs[MonthlySummaryStateKeys.ERROR_MESSAGE] = e.toErrorMessage()
+                prefs[MonthlySummaryStateKeys.MONTH_OFFSET] = monthOffset
             }
             Result.retry()
         }
@@ -81,16 +81,16 @@ class BudgetWidgetWorker(
     ) {
         updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) { current ->
             current.toMutablePreferences().apply {
-                this[WidgetStateKeys.APP_WIDGET_ID] = appWidgetId
+                this[MonthlySummaryStateKeys.APP_WIDGET_ID] = appWidgetId
                 block(this)
             }
         }
-        BudgetWidget().update(context, glanceId)
+        MonthlySummaryWidget().update(context, glanceId)
     }
 
     companion object {
         private const val KEY_WIDGET_ID = "widget_id"
-        private const val WORK_PREFIX = "actual_widget"
+        private const val WORK_PREFIX = "monthly_summary_widget"
 
         private fun periodicWorkName(widgetId: Int) = "${WORK_PREFIX}_periodic_$widgetId"
         private fun networkConstraints() = Constraints.Builder()
@@ -98,7 +98,7 @@ class BudgetWidgetWorker(
             .build()
 
         fun enqueueOneTimeWork(context: Context, appWidgetId: Int) {
-            val request = OneTimeWorkRequestBuilder<BudgetWidgetWorker>()
+            val request = OneTimeWorkRequestBuilder<MonthlySummaryWidgetWorker>()
                 .setInputData(Data.Builder().putInt(KEY_WIDGET_ID, appWidgetId).build())
                 .setConstraints(networkConstraints())
                 .build()
@@ -106,7 +106,7 @@ class BudgetWidgetWorker(
         }
 
         fun enqueuePeriodicWork(context: Context, appWidgetId: Int) {
-            val request = PeriodicWorkRequestBuilder<BudgetWidgetWorker>(30, TimeUnit.MINUTES)
+            val request = PeriodicWorkRequestBuilder<MonthlySummaryWidgetWorker>(30, TimeUnit.MINUTES)
                 .setInputData(Data.Builder().putInt(KEY_WIDGET_ID, appWidgetId).build())
                 .setConstraints(networkConstraints())
                 .build()

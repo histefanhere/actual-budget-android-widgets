@@ -48,7 +48,7 @@ import com.google.gson.Gson
 import com.histefanhere.actualwidgets.R
 import com.histefanhere.actualwidgets.model.BarScaleMode
 import com.histefanhere.actualwidgets.model.CategoryGroupEntry
-import com.histefanhere.actualwidgets.model.CategoryGroupsSnapshot
+import com.histefanhere.actualwidgets.model.CategoryBreakdownSnapshot
 import com.histefanhere.actualwidgets.model.CategoryRowFormat
 import com.histefanhere.actualwidgets.model.CategoryViewMode
 import com.histefanhere.actualwidgets.model.TextSizes
@@ -69,7 +69,7 @@ private val ColorAmber            = ColorProvider(R.color.widget_amber)
 private val ColorNegative         = ColorProvider(R.color.widget_negative)
 
 
-class CategoryGroupWidget : GlanceAppWidget() {
+class CategoryBreakdownWidget : GlanceAppWidget() {
 
     override val stateDefinition = PreferencesGlanceStateDefinition
     override val sizeMode = SizeMode.Exact
@@ -77,40 +77,40 @@ class CategoryGroupWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            val stateType = prefs[CategoryWidgetStateKeys.STATE_TYPE] ?: STATE_LOADING
+            val stateType = prefs[CategoryBreakdownStateKeys.STATE_TYPE] ?: WidgetState.LOADING
 
             GlanceTheme {
                 when (stateType) {
-                    STATE_NOT_CONFIGURED -> NotConfiguredContent()
-                    STATE_ERROR -> {
-                        val sizes = prefs[CategoryWidgetStateKeys.WIDGET_SIZE]
+                    WidgetState.NOT_CONFIGURED -> NotConfiguredContent()
+                    WidgetState.ERROR -> {
+                        val sizes = prefs[CategoryBreakdownStateKeys.WIDGET_SIZE]
                             ?.let { runCatching { WidgetSize.valueOf(it) }.getOrNull() }
                             ?.textSizes ?: WidgetSize.MEDIUM.textSizes
-                        ErrorContent(prefs[CategoryWidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
+                        ErrorContent(prefs[CategoryBreakdownStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
                     }
-                    STATE_SUCCESS -> {
-                        val viewMode = prefs[CategoryWidgetStateKeys.VIEW_MODE]
+                    WidgetState.SUCCESS -> {
+                        val viewMode = prefs[CategoryBreakdownStateKeys.VIEW_MODE]
                             ?.let { runCatching { CategoryViewMode.valueOf(it) }.getOrNull() }
                             ?: CategoryViewMode.GROUPS
                         val json = when (viewMode) {
-                            CategoryViewMode.GROUPS     -> prefs[CategoryWidgetStateKeys.GROUPS_JSON]
-                            CategoryViewMode.CATEGORIES -> prefs[CategoryWidgetStateKeys.CATEGORIES_JSON]
+                            CategoryViewMode.GROUPS     -> prefs[CategoryBreakdownStateKeys.GROUPS_JSON]
+                            CategoryViewMode.CATEGORIES -> prefs[CategoryBreakdownStateKeys.CATEGORIES_JSON]
                         }
-                        val normalizedScale = prefs[CategoryWidgetStateKeys.NORMALIZED_SCALE] ?: false
-                        val sizes = prefs[CategoryWidgetStateKeys.WIDGET_SIZE]
+                        val normalizedScale = prefs[CategoryBreakdownStateKeys.NORMALIZED_SCALE] ?: false
+                        val sizes = prefs[CategoryBreakdownStateKeys.WIDGET_SIZE]
                             ?.let { runCatching { WidgetSize.valueOf(it) }.getOrNull() }
                             ?.textSizes ?: WidgetSize.MEDIUM.textSizes
-                        val showCents = prefs[CategoryWidgetStateKeys.SHOW_CENTS] ?: true
-                        val showProgressBars = prefs[CategoryWidgetStateKeys.SHOW_PROGRESS_BARS] ?: true
-                        val showMonthArrows = prefs[CategoryWidgetStateKeys.SHOW_MONTH_ARROWS] ?: true
-                        val showRefreshIcon = prefs[CategoryWidgetStateKeys.SHOW_REFRESH_ICON] ?: true
-                        val rowFormat = prefs[CategoryWidgetStateKeys.CATEGORY_ROW_FORMAT]
+                        val showCents = prefs[CategoryBreakdownStateKeys.SHOW_CENTS] ?: true
+                        val showProgressBars = prefs[CategoryBreakdownStateKeys.SHOW_PROGRESS_BARS] ?: true
+                        val showMonthArrows = prefs[CategoryBreakdownStateKeys.SHOW_MONTH_ARROWS] ?: true
+                        val showRefreshIcon = prefs[CategoryBreakdownStateKeys.SHOW_REFRESH_ICON] ?: true
+                        val rowFormat = prefs[CategoryBreakdownStateKeys.CATEGORY_ROW_FORMAT]
                             ?.let { runCatching { CategoryRowFormat.valueOf(it) }.getOrNull() }
                             ?: CategoryRowFormat.SPENT_OF_BUDGETED
-                        val barScaleMode = prefs[CategoryWidgetStateKeys.BAR_SCALE_MODE]
+                        val barScaleMode = prefs[CategoryBreakdownStateKeys.BAR_SCALE_MODE]
                             ?.let { runCatching { BarScaleMode.valueOf(it) }.getOrNull() }
                             ?: BarScaleMode.SPENT_OF_BUDGETED
-                        val snapshot = json?.let { Gson().fromJson(it, CategoryGroupsSnapshot::class.java) }
+                        val snapshot = json?.let { Gson().fromJson(it, CategoryBreakdownSnapshot::class.java) }
                         if (snapshot != null) SuccessContent(snapshot, viewMode, normalizedScale, barScaleMode, sizes, showCents, showProgressBars, showMonthArrows, showRefreshIcon, rowFormat) else LoadingContent()
                     }
                     else -> LoadingContent()
@@ -171,7 +171,7 @@ private fun ErrorContent(message: String, sizes: TextSizes) {
                 colorFilter = ColorFilter.tint(ColorAccent),
                 modifier = GlanceModifier
                     .size((sizes.headerSp * 1.4f).dp)
-                    .clickable(actionRunCallback<CategoryRefreshAction>()),
+                    .clickable(actionRunCallback<CategoryBreakdownRefreshAction>()),
             )
         }
     }
@@ -179,7 +179,7 @@ private fun ErrorContent(message: String, sizes: TextSizes) {
 
 @Composable
 private fun SuccessContent(
-    snapshot: CategoryGroupsSnapshot,
+    snapshot: CategoryBreakdownSnapshot,
     viewMode: CategoryViewMode,
     normalizedScale: Boolean,
     barScaleMode: BarScaleMode,
@@ -220,7 +220,7 @@ private fun SuccessContent(
                                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                                 modifier = GlanceModifier
                                     .size((sizes.headerSp * 1.4f).dp)
-                                    .clickable(actionRunCallback<CategoryPreviousMonthAction>()),
+                                    .clickable(actionRunCallback<CategoryBreakdownPreviousMonthAction>()),
                             )
                             Image(
                                 provider = ImageProvider(R.drawable.ic_chevron_right),
@@ -228,7 +228,7 @@ private fun SuccessContent(
                                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                                 modifier = GlanceModifier
                                     .size((sizes.headerSp * 1.4f).dp)
-                                    .clickable(actionRunCallback<CategoryNextMonthAction>()),
+                                    .clickable(actionRunCallback<CategoryBreakdownNextMonthAction>()),
                             )
                         }
                         if (showRefreshIcon) {
@@ -238,7 +238,7 @@ private fun SuccessContent(
                                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                                 modifier = GlanceModifier
                                     .size((sizes.headerSp * 1.4f).dp)
-                                    .clickable(actionRunCallback<CategoryRefreshAction>()),
+                                    .clickable(actionRunCallback<CategoryBreakdownRefreshAction>()),
                             )
                         }
                     }

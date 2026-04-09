@@ -55,7 +55,7 @@ private val ColorOnSurfaceVariant = ColorProvider(R.color.widget_on_surface_vari
 private val ColorPositive         = ColorProvider(R.color.widget_positive)
 private val ColorNegative         = ColorProvider(R.color.widget_negative)
 
-class BudgetWidget : GlanceAppWidget() {
+class MonthlySummaryWidget : GlanceAppWidget() {
 
     override val stateDefinition = PreferencesGlanceStateDefinition
     override val sizeMode = SizeMode.Exact
@@ -63,26 +63,26 @@ class BudgetWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val prefs = currentState<Preferences>()
-            val stateType = prefs[WidgetStateKeys.STATE_TYPE] ?: STATE_LOADING
+            val stateType = prefs[MonthlySummaryStateKeys.STATE_TYPE] ?: WidgetState.LOADING
 
             GlanceTheme {
                 when (stateType) {
-                    STATE_NOT_CONFIGURED -> NotConfiguredContent()
-                    STATE_ERROR -> {
-                        val sizeStr = prefs[WidgetStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
+                    WidgetState.NOT_CONFIGURED -> NotConfiguredContent()
+                    WidgetState.ERROR -> {
+                        val sizeStr = prefs[MonthlySummaryStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
                         val sizes = runCatching { WidgetSize.valueOf(sizeStr) }.getOrDefault(WidgetSize.MEDIUM).textSizes
-                        ErrorContent(prefs[WidgetStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
+                        ErrorContent(prefs[MonthlySummaryStateKeys.ERROR_MESSAGE] ?: "Unknown error", sizes)
                     }
-                    STATE_SUCCESS -> {
-                        val json = prefs[WidgetStateKeys.SUMMARY_JSON]
+                    WidgetState.SUCCESS -> {
+                        val json = prefs[MonthlySummaryStateKeys.SUMMARY_JSON]
                         val summary = json?.let { Gson().fromJson(it, BudgetSummary::class.java) }
-                        val sizeStr = prefs[WidgetStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
+                        val sizeStr = prefs[MonthlySummaryStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
                         val sizes = runCatching { WidgetSize.valueOf(sizeStr) }
                             .getOrDefault(WidgetSize.MEDIUM).textSizes
-                        val showCents = prefs[WidgetStateKeys.SHOW_CENTS] ?: true
-                        val showMonthArrows = prefs[WidgetStateKeys.SHOW_MONTH_ARROWS] ?: true
-                        val showRefreshIcon = prefs[WidgetStateKeys.SHOW_REFRESH_ICON] ?: true
-                        val visibleStats = prefs[WidgetStateKeys.VISIBLE_BUDGET_STATS]
+                        val showCents = prefs[MonthlySummaryStateKeys.SHOW_CENTS] ?: true
+                        val showMonthArrows = prefs[MonthlySummaryStateKeys.SHOW_MONTH_ARROWS] ?: true
+                        val showRefreshIcon = prefs[MonthlySummaryStateKeys.SHOW_REFRESH_ICON] ?: true
+                        val visibleStats = prefs[MonthlySummaryStateKeys.VISIBLE_BUDGET_STATS]
                             ?.split(",")
                             ?.mapNotNull { runCatching { BudgetStat.valueOf(it) }.getOrNull() }
                             ?.toSet()
@@ -151,7 +151,7 @@ private fun ErrorContent(message: String, sizes: TextSizes) {
                 colorFilter = ColorFilter.tint(ColorAccent),
                 modifier = GlanceModifier
                     .size((sizes.headerSp * 1.4f).dp)
-                    .clickable(actionRunCallback<RefreshAction>()),
+                    .clickable(actionRunCallback<MonthlySummaryRefreshAction>()),
             )
         }
     }
@@ -311,7 +311,7 @@ private fun StatHeader(
                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                 modifier = GlanceModifier
                     .size((sizes.headerSp * 1.4f).dp)
-                    .clickable(actionRunCallback<PreviousMonthAction>()),
+                    .clickable(actionRunCallback<MonthlySummaryPreviousMonthAction>()),
             )
             Image(
                 provider = ImageProvider(R.drawable.ic_chevron_right),
@@ -319,7 +319,7 @@ private fun StatHeader(
                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                 modifier = GlanceModifier
                     .size((sizes.headerSp * 1.4f).dp)
-                    .clickable(actionRunCallback<NextMonthAction>()),
+                    .clickable(actionRunCallback<MonthlySummaryNextMonthAction>()),
             )
         }
         if (showRefreshIcon) {
@@ -329,7 +329,7 @@ private fun StatHeader(
                 colorFilter = ColorFilter.tint(ColorOnSurfaceVariant),
                 modifier = GlanceModifier
                     .size((sizes.headerSp * 1.4f).dp)
-                    .clickable(actionRunCallback<RefreshAction>()),
+                    .clickable(actionRunCallback<MonthlySummaryRefreshAction>()),
             )
         }
     }

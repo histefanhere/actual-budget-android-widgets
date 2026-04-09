@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:configure="com.histefanhere.actualwidgets.ui.configure.WidgetConfigActivity"
-    android:label="@string/widget_name"
-    android:description="@string/widget_description"
+    android:label="@string/monthly_summary_widget_name"
+    android:description="@string/monthly_summary_widget_description"
     android:initialLayout="@layout/widget_initial_layout"
     android:minWidth="110dp"
     android:minHeight="40dp"
