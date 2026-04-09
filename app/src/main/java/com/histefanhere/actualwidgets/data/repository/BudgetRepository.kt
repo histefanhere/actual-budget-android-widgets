@@ -1,14 +1,11 @@
 package com.histefanhere.actualwidgets.data.repository
 
 import com.histefanhere.actualwidgets.data.api.ActualApiService
-import com.histefanhere.actualwidgets.data.api.ApiCategoryGroup
-import com.histefanhere.actualwidgets.data.api.ApiMonthCategory
 import com.histefanhere.actualwidgets.data.api.BudgetFile
 import com.histefanhere.actualwidgets.model.BudgetSummary
-import com.histefanhere.actualwidgets.model.CategoryGroupEntry
-import com.histefanhere.actualwidgets.model.CategoryGroupInfo
-import com.histefanhere.actualwidgets.model.CategoryGroupWithCategories
 import com.histefanhere.actualwidgets.model.CategoryBreakdownSnapshot
+import com.histefanhere.actualwidgets.model.CategoryGroupEntry
+import com.histefanhere.actualwidgets.model.CategoryGroupWithCategories
 import com.histefanhere.actualwidgets.model.CategoryInfo
 import com.histefanhere.actualwidgets.model.WidgetConfig
 import java.time.LocalDate
@@ -114,13 +111,6 @@ class BudgetRepository(private val api: ActualApiService) {
             lastUpdatedMs = System.currentTimeMillis(),
         )
     }
-
-    // Only include non-income, non-hidden category groups
-    private fun List<ApiCategoryGroup>?.expenseCategories(): List<ApiMonthCategory> =
-        this?.filter { !it.isIncome && !it.hidden }
-            ?.flatMap { it.categories }
-            ?.filter { !it.hidden }
-            ?: emptyList()
 
     private fun formatMonthLabel(yearMonthStr: String): String {
         val ym = YearMonth.parse(yearMonthStr, MONTH_FORMAT)
