@@ -77,6 +77,28 @@ To install directly to a connected device:
 ./gradlew installDebug
 ```
 
+## GitHub Releases
+
+Tagged releases are built by GitHub Actions when a `v*` tag is pushed. The workflow builds a signed release APK, creates a SHA-256 checksum file, and opens a draft GitHub Release with generated notes.
+
+Configure these repository secrets before creating a release:
+
+| Secret | Description |
+|--------|-------------|
+| `ANDROID_SIGNING_KEY_BASE64` | Base64-encoded release keystore file |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | Release key alias |
+| `ANDROID_KEY_PASSWORD` | Release key password |
+
+To create a release:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Make sure `versionName` and `versionCode` in `app/build.gradle.kts` are updated before tagging.
+
 ## Notes on HTTP
 
 Actual Budget is typically self-hosted on a local network over plain HTTP. The app permits cleartext HTTP traffic via `network_security_config.xml` to support this. HTTPS works without any changes.
