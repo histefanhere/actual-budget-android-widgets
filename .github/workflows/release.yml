@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
