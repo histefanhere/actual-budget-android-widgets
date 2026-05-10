@@ -1,108 +1,128 @@
 # Actual Budget Android Widgets
 
-Home screen widgets for [Actual Budget](https://actualbudget.org/), connecting via the [actual-http-api](https://github.com/jhonderson/actual-http-api) REST wrapper.
+[![Release](https://img.shields.io/github/v/release/histefanhere/actual-budget-android-widgets?include_prereleases&sort=semver)](https://github.com/histefanhere/actual-budget-android-widgets/releases)
+[![Release build](https://github.com/histefanhere/actual-budget-android-widgets/actions/workflows/release.yml/badge.svg)](https://github.com/histefanhere/actual-budget-android-widgets/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Android 8.0+](https://img.shields.io/badge/android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com/about/versions/oreo)
+[![Kotlin](https://img.shields.io/badge/kotlin-android-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 
-## Widgets
+Android home screen widgets for [Actual Budget](https://actualbudget.org/).
 
-### Monthly Summary
-Shows an overview of this month's budget. You can choose which stats to display from:
-- Income, From Last Month, Available Funds, Last Month Overspent, For Next Month
-- Budgeted, To Budget, Spent, Balance
+The app connects to your Actual Budget server through
+[actual-http-api](https://github.com/jhonderson/actual-http-api) and shows budget
+information directly on your Android launcher.
 
-Automatically switches to a two-column layout on wider widgets (4+ columns).
+## Features
 
-### Category Breakdown
-Shows spending progress for each budget category or group, with configurable progress bars and display formats:
-- **Spent / Budgeted** — e.g. $50 / $200
-- **Spent** — e.g. $50
-- **Balance** — e.g. $150
-- **Spent / Available** — e.g. $50 / $250 (includes carry-over)
+- Monthly Summary widget with configurable budget stats
+- Category Breakdown widget for category or group spending
+- Configurable currency symbol, amount precision, and widget size
+- Optional category progress bars
+- Manual refresh button and automatic background refresh
+- Support for local HTTP Actual Budget setups
+
+## Screenshots
+
+Screenshots will be added here later.
+
+<!--
+Suggested layout:
+
+| Monthly Summary | Category Breakdown | Configuration |
+| --- | --- | --- |
+| ![Monthly Summary](docs/screenshots/monthly-summary.png) | ![Category Breakdown](docs/screenshots/category-breakdown.png) | ![Configuration](docs/screenshots/configuration.png) |
+-->
 
 ## Requirements
 
-- [Actual Budget](https://actualbudget.org/) — self-hosted budgeting app
-- [actual-http-api](https://github.com/jhonderson/actual-http-api) — REST wrapper running alongside Actual Budget
-- Android 8.0 (API 26) or higher
+- Android 8.0 or newer
+- A running [Actual Budget](https://actualbudget.org/) instance
+- A running [actual-http-api](https://github.com/jhonderson/actual-http-api) instance
+
+## Installation
+
+Download the latest APK from [Releases](../../releases), then install it on your
+Android device.
+
+You can also install and update the app with
+[Obtainium](https://github.com/ImranR98/Obtainium). Add this repository URL and
+use the GitHub source:
+
+```text
+https://github.com/histefanhere/ActualBudgetAndroidWidgets
+```
 
 ## Setup
 
-1. Install and configure [actual-http-api](https://github.com/jhonderson/actual-http-api) pointing at your Actual Budget instance
-2. Install the app (see [Releases](../../releases))
-3. Long-press your home screen → Widgets → find **Monthly Summary** or **Category Breakdown**
-4. Place the widget and fill in:
-   - **Server URL** — e.g. `http://192.168.1.100:5006`
-   - **API Key** — from your actual-http-api configuration
-   - **Budget** — select from the list fetched from your server
-5. Tap the check button to save; the widget will populate within a few seconds
+1. Configure `actual-http-api` for your Actual Budget server.
+2. (Recommended) Find your actual-http-api API key and copy it to save it to your clipboard for easier setup.
+3. Add either the Monthly Summary or Category Breakdown widget to your home
+   screen.
+4. Enter your server URL, API key, and budget.
+5. Save the widget configuration.
 
-Widgets refresh automatically every 30 minutes when connected to a network, or on demand via the refresh button.
+Example server URLs:
 
-## Configuration Options
+```text
+http://192.168.1.100:5006
+https://my-actual-budget-instance.example.com
+```
 
-### Both widgets
-| Option | Description |
-|--------|-------------|
-| Symbol | Currency symbol shown next to amounts (e.g. `$`, `£`, `€`) |
-| Size | Text/element size — Small, Medium, Large, or Massive |
-| Show Cents | Toggle cent-precision vs. whole dollar amounts |
+Widgets refresh automatically about every 30 minutes while connected to a
+network. You can also refresh them manually from the widget.
 
-### Monthly Summary
-| Option | Description |
-|--------|-------------|
-| Visible Stats | Choose which of the 9 stats appear on the widget |
+## Building
 
-### Category Breakdown
-| Option | Description |
-|--------|-------------|
-| Show As | Groups or individual categories |
-| Display Format | What figures to show per row (Spent/Budgeted, Spent, Balance, Spent/Available) |
-| Progress Bars | Toggle the spending progress bars on/off |
-| Proportional Scale | Scale all bars relative to the largest value (disabled when bars are off) |
-| Hidden categories | Tap individual groups or categories to hide them from the widget |
+Prerequisites:
 
-## Building from Source
+- Android Studio
+- JDK 17 or newer
 
-**Prerequisites:** Android Studio, JDK 17+
+Build a debug APK:
 
 ```bash
-git clone https://github.com/histefanhere/ActualBudgetAndroidWidgets.git
-cd ActualBudgetAndroidWidgets
 ./gradlew assembleDebug
 ```
 
-The debug APK will be at `app/build/outputs/apk/debug/app-debug.apk`.
+Install the debug build on a connected device:
 
-To install directly to a connected device:
 ```bash
 ./gradlew installDebug
 ```
 
-## GitHub Releases
+The debug APK is generated at:
 
-Tagged releases are built by GitHub Actions when a `v*` tag is pushed. The workflow builds a signed release APK, creates a SHA-256 checksum file, and opens a draft GitHub Release with generated notes.
-
-Configure these repository secrets before creating a release:
-
-| Secret | Description |
-|--------|-------------|
-| `ANDROID_SIGNING_KEY_BASE64` | Base64-encoded release keystore file |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-| `ANDROID_KEY_ALIAS` | Release key alias |
-| `ANDROID_KEY_PASSWORD` | Release key password |
-
-To create a release:
-
-```bash
-git tag v1.0.0
-git push origin v1.0.0
+```text
+app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Make sure `versionName` and `versionCode` in `app/build.gradle.kts` are updated before tagging.
+## Releases
 
-## Notes on HTTP
+See the [Releases](../../releases) page for APK downloads and release notes.
 
-Actual Budget is typically self-hosted on a local network over plain HTTP. The app permits cleartext HTTP traffic via `network_security_config.xml` to support this. HTTPS works without any changes.
+## HTTP Support
+
+Self-hosted Actual Budget setups often run on a local network over plain HTTP.
+This app allows cleartext HTTP traffic so those setups work without extra
+configuration. HTTPS is also supported and always recommended.
+
+## Acknowledgements
+
+This project builds on work from:
+
+- [Actual Budget](https://github.com/actualbudget/actual), the budgeting app
+  this widget app is designed for
+- [actual-http-api](https://github.com/jhonderson/actual-http-api), the local
+  REST API bridge used to connect to Actual Budget
+
+## Similar Projects
+
+Other projects in the Actual Budget ecosystem:
+
+- [Actual Budget iOS Widget](https://github.com/TaylorJns/Actual-Budget-iOS-Widget) (The inspiration for this project!)
+- [Actual Accounts iOS App](https://github.com/BearTS/actual-budget-app/tree/dev)
+- [Actual Budget Home Assistant Integration](https://github.com/jlvcm/ha-actualbudget)
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT. See [LICENSE](LICENSE).
