@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,6 +33,8 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -44,6 +47,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -260,6 +265,8 @@ private fun WidgetConfigScreen(
                         )
                     }
                 }
+
+                MonthOffsetControl(viewModel)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -519,6 +526,91 @@ private fun WidgetConfigScreen(
 }
 
 // ── Section card ──────────────────────────────────────────────────────────────
+
+@Composable
+private fun MonthOffsetControl(viewModel: WidgetConfigViewModel) {
+    var monthOffsetText by remember { mutableStateOf(viewModel.monthOffset.toString()) }
+    val offsetDescription = when {
+        viewModel.monthOffset == 0 -> "Current month"
+        viewModel.monthOffset == -1 -> "Previous month"
+        viewModel.monthOffset < 0 -> "${-viewModel.monthOffset} months ago"
+        viewModel.monthOffset == 1 -> "Next month"
+        else -> "In ${viewModel.monthOffset} months"
+    }
+
+    LaunchedEffect(viewModel.monthOffset) {
+        monthOffsetText = viewModel.monthOffset.toString()
+    }
+
+    fun setMonthOffset(value: Int) {
+        viewModel.monthOffset = value
+        monthOffsetText = value.toString()
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
+                Text(
+                    text = "Month Offset",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Text(
+                    text = offsetDescription,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Button(
+                    onClick = { setMonthOffset(viewModel.monthOffset - 1) },
+                    modifier = Modifier.size(44.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
+                ) {
+                    Text("-", style = MaterialTheme.typography.titleMedium)
+                }
+                OutlinedTextField(
+                    value = monthOffsetText,
+                    onValueChange = { value ->
+                        if (value.matches(Regex("-?\\d*"))) {
+                            monthOffsetText = value
+                            value.toIntOrNull()?.let { viewModel.monthOffset = it }
+                        }
+                    },
+                    modifier = Modifier.width(84.dp),
+                    singleLine = true,
+                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done,
+                    ),
+                )
+                Button(
+                    onClick = { setMonthOffset(viewModel.monthOffset + 1) },
+                    modifier = Modifier.size(44.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ),
+                ) {
+                    Text("+", style = MaterialTheme.typography.titleMedium)
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun ConfigSection(title: String, content: @Composable ColumnScope.() -> Unit) {

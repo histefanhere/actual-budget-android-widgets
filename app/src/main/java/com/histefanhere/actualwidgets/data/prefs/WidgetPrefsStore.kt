@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -45,6 +46,9 @@ class WidgetPrefsStore(private val context: Context) {
     private fun showRefreshIconKey(widgetId: Int) =
         booleanPreferencesKey("config_${widgetId}_show_refresh_icon")
 
+    private fun monthOffsetKey(widgetId: Int) =
+        intPreferencesKey("config_${widgetId}_month_offset")
+
     private fun visibleBudgetStatsKey(widgetId: Int) =
         stringSetPreferencesKey("config_${widgetId}_visible_budget_stats")
 
@@ -56,6 +60,7 @@ class WidgetPrefsStore(private val context: Context) {
             prefs[key(widgetId, "budget_name")] = config.budgetName
             prefs[key(widgetId, "currency")] = config.currencySymbol
             prefs[key(widgetId, "size")] = config.widgetSize.name
+            prefs[monthOffsetKey(widgetId)] = config.monthOffset
             prefs[hiddenGroupsKey(widgetId)] = config.hiddenCategoryGroupIds
             prefs[hiddenCategoryIdsKey(widgetId)] = config.hiddenCategoryIds
             prefs[key(widgetId, "category_view_mode")] = config.categoryViewMode.name
@@ -84,6 +89,7 @@ class WidgetPrefsStore(private val context: Context) {
             widgetSize = prefs[key(widgetId, "size")]
                 ?.let { runCatching { WidgetSize.valueOf(it) }.getOrNull() }
                 ?: WidgetSize.MEDIUM,
+            monthOffset = prefs[monthOffsetKey(widgetId)] ?: 0,
             hiddenCategoryGroupIds = prefs[hiddenGroupsKey(widgetId)] ?: emptySet(),
             hiddenCategoryIds = prefs[hiddenCategoryIdsKey(widgetId)] ?: emptySet(),
             categoryViewMode = prefs[key(widgetId, "category_view_mode")]
@@ -120,6 +126,7 @@ class WidgetPrefsStore(private val context: Context) {
             prefs.remove(showProgressBarsKey(widgetId))
             prefs.remove(showMonthArrowsKey(widgetId))
             prefs.remove(showRefreshIconKey(widgetId))
+            prefs.remove(monthOffsetKey(widgetId))
             prefs.remove(key(widgetId, "category_row_format"))
             prefs.remove(key(widgetId, "bar_scale_mode"))
             prefs.remove(visibleBudgetStatsKey(widgetId))

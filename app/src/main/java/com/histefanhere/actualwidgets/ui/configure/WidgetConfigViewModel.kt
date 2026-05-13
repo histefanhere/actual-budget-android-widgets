@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.getAppWidgetState
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.lifecycle.AndroidViewModel
@@ -55,6 +56,7 @@ class WidgetConfigViewModel(
     var selectedBudgetName by mutableStateOf("")
 
     var widgetSize by mutableStateOf(WidgetSize.MEDIUM)
+    var monthOffset by mutableStateOf(0)
 
     var availableCategoryGroupsWithCategories by mutableStateOf<List<CategoryGroupWithCategories>>(emptyList())
     var hiddenCategoryGroupIds by mutableStateOf<Set<String>>(emptySet())
@@ -89,6 +91,7 @@ class WidgetConfigViewModel(
             selectedBudgetId = existing.budgetId
             selectedBudgetName = existing.budgetName
             widgetSize = existing.widgetSize
+            monthOffset = getLiveMonthOffset() ?: existing.monthOffset
             hiddenCategoryGroupIds = existing.hiddenCategoryGroupIds
             hiddenCategoryIds = existing.hiddenCategoryIds
             categoryViewMode = existing.categoryViewMode
@@ -141,6 +144,7 @@ class WidgetConfigViewModel(
                 budgetName = selectedBudgetName,
                 currencySymbol = currencySymbol.ifBlank { "$" },
                 widgetSize = widgetSize,
+                monthOffset = monthOffset,
                 hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                 hiddenCategoryIds = hiddenCategoryIds,
                 categoryViewMode = categoryViewMode,
@@ -154,6 +158,7 @@ class WidgetConfigViewModel(
                 visibleBudgetStats = visibleBudgetStats,
             )
             prefsStore.saveConfig(appWidgetId, config)
+            applySavedMonthOffsetToWidget()
             if (isMonthlySummaryWidget) {
                 MonthlySummaryWidgetWorker.enqueueOneTimeWork(getApplication(), appWidgetId)
                 MonthlySummaryWidgetWorker.enqueuePeriodicWork(getApplication(), appWidgetId)
@@ -179,6 +184,7 @@ class WidgetConfigViewModel(
                     budgetName = selectedBudgetName,
                     currencySymbol = currencySymbol.ifBlank { "$" },
                     widgetSize = size,
+                    monthOffset = monthOffset,
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = categoryViewMode,
@@ -186,6 +192,7 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showProgressBars = showProgressBars,
                     showMonthArrows = showMonthArrows,
                     showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
@@ -255,6 +262,7 @@ class WidgetConfigViewModel(
                     budgetName = selectedBudgetName,
                     currencySymbol = currencySymbol.ifBlank { "$" },
                     widgetSize = widgetSize,
+                    monthOffset = monthOffset,
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = categoryViewMode,
@@ -262,6 +270,7 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = enabled,
                     showCents = showCents,
+                    showProgressBars = showProgressBars,
                     showMonthArrows = showMonthArrows,
                     showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
@@ -290,6 +299,7 @@ class WidgetConfigViewModel(
                     budgetName = selectedBudgetName,
                     currencySymbol = currencySymbol.ifBlank { "$" },
                     widgetSize = widgetSize,
+                    monthOffset = monthOffset,
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = categoryViewMode,
@@ -297,6 +307,7 @@ class WidgetConfigViewModel(
                     barScaleMode = mode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showProgressBars = showProgressBars,
                     showMonthArrows = showMonthArrows,
                     showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
@@ -325,6 +336,7 @@ class WidgetConfigViewModel(
                     budgetName = selectedBudgetName,
                     currencySymbol = currencySymbol.ifBlank { "$" },
                     widgetSize = widgetSize,
+                    monthOffset = monthOffset,
                     hiddenCategoryGroupIds = hiddenCategoryGroupIds,
                     hiddenCategoryIds = hiddenCategoryIds,
                     categoryViewMode = mode,
@@ -332,6 +344,7 @@ class WidgetConfigViewModel(
                     barScaleMode = barScaleMode,
                     normalizedScale = normalizedScale,
                     showCents = showCents,
+                    showProgressBars = showProgressBars,
                     showMonthArrows = showMonthArrows,
                     showRefreshIcon = showRefreshIcon,
                     visibleBudgetStats = visibleBudgetStats,
@@ -363,6 +376,31 @@ class WidgetConfigViewModel(
                 currencySymbol = config.currencySymbol
                 return
             }
+        }
+    }
+
+    private suspend fun applySavedMonthOffsetToWidget() {
+        val glanceId = GlanceAppWidgetManager(getApplication()).getGlanceIdBy(appWidgetId)
+            ?: return
+        updateAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId) { current ->
+            current.toMutablePreferences().apply {
+                if (isMonthlySummaryWidget) {
+                    this[MonthlySummaryStateKeys.MONTH_OFFSET] = monthOffset
+                } else {
+                    this[CategoryBreakdownStateKeys.MONTH_OFFSET] = monthOffset
+                }
+            }
+        }
+    }
+
+    private suspend fun getLiveMonthOffset(): Int? {
+        val glanceId = GlanceAppWidgetManager(getApplication()).getGlanceIdBy(appWidgetId)
+            ?: return null
+        val prefs = getAppWidgetState(getApplication(), PreferencesGlanceStateDefinition, glanceId)
+        return if (isMonthlySummaryWidget) {
+            prefs[MonthlySummaryStateKeys.MONTH_OFFSET]
+        } else {
+            prefs[CategoryBreakdownStateKeys.MONTH_OFFSET]
         }
     }
 

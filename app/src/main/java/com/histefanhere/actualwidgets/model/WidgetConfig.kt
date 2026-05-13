@@ -8,6 +8,8 @@ data class WidgetConfig(
     /** Symbol prepended to monetary values, e.g. "$", "€", "£". */
     val currencySymbol: String = "$",
     val widgetSize: WidgetSize = WidgetSize.MEDIUM,
+    /** Month offset from the current month: 0 = current, -1 = previous month, 1 = next month. */
+    val monthOffset: Int = 0,
     /** IDs of category groups the user has chosen to hide in the category health widget. */
     val hiddenCategoryGroupIds: Set<String> = emptySet(),
     val hiddenCategoryIds: Set<String> = emptySet(),

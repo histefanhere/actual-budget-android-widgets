@@ -35,10 +35,9 @@ class MonthlySummaryWidgetWorker(
         val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId)
             ?: return Result.failure()
 
-        val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
-            .let { it[MonthlySummaryStateKeys.MONTH_OFFSET] ?: 0 }
-
         val config = WidgetPrefsStore(context).getConfig(appWidgetId)
+        val monthOffset = getAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId)
+            .let { it[MonthlySummaryStateKeys.MONTH_OFFSET] ?: config?.monthOffset ?: 0 }
         if (config == null) {
             setState(glanceId, appWidgetId) { prefs ->
                 prefs[MonthlySummaryStateKeys.STATE_TYPE] = WidgetState.NOT_CONFIGURED
