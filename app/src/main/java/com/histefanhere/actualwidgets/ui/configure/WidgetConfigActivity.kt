@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -33,9 +34,8 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -54,11 +54,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.histefanhere.actualwidgets.R
 import com.histefanhere.actualwidgets.model.BarScaleMode
@@ -519,6 +520,8 @@ private fun WidgetConfigScreen(
                 }
             }
 
+            AboutSection()
+
             // Space so the FAB doesn't overlap the last card
             Spacer(Modifier.height(80.dp))
         }
@@ -630,6 +633,40 @@ private fun ConfigSection(title: String, content: @Composable ColumnScope.() -> 
 }
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
+
+@Composable
+private fun AboutSection() {
+    val uriHandler = LocalUriHandler.current
+    val projectUrl = "https://github.com/histefanhere/actual-budget-android-widgets"
+
+    ConfigSection(title = "About") {
+        Text(
+            text = "Actual Budget Android Widgets is a small companion for keeping your finances visible at a glance, born out of an obsession of staying up-to-date with my budgets.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = "Report any bugs or request new features on the project's GitHub page:",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Button(
+            onClick = { uriHandler.openUri(projectUrl) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            ),
+        ) {
+            Text("github.com/histefanhere/actual-budget-android-widgets")
+        }
+        Text(
+            text = "Thank you for using this app and helping make it better for everyone! \uD83E\uDEF6",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
 
 @Composable
 private fun SectionLabel(text: String) {
