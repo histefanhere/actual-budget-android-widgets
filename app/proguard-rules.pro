@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Retrofit and Gson inspect generic response types and annotations at runtime.
+# Without Signature, List<BudgetFile> can be reduced to a raw Class in release
+# builds, causing "Class cannot be cast to ParameterizedType" while parsing.
+-keepattributes Signature
+-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
+
+# Keep Retrofit service method signatures and endpoint annotations.
+-keep interface com.histefanhere.actualwidgets.data.api.ActualApiService { *; }
+
+# Keep API DTO fields so Gson can map JSON responses after R8 minification.
+-keep class com.histefanhere.actualwidgets.data.api.** { *; }
