@@ -82,7 +82,9 @@ class WidgetConfigViewModel(
         viewModelScope.launch {
             val existing = prefsStore.getConfig(appWidgetId)
             if (existing == null) {
-                loadConnectionDefaults()
+                if (loadConnectionDefaults()) {
+                    fetchBudgets()
+                }
                 return@launch
             }
             serverUrl = existing.serverUrl
@@ -361,7 +363,7 @@ class WidgetConfigViewModel(
         }
     }
 
-    private suspend fun loadConnectionDefaults() {
+    private suspend fun loadConnectionDefaults(): Boolean {
         val appWidgetManager = AppWidgetManager.getInstance(getApplication())
         val providers = listOf(
             ComponentName(getApplication(), MonthlySummaryWidgetReceiver::class.java),
@@ -374,9 +376,10 @@ class WidgetConfigViewModel(
                 serverUrl = config.serverUrl
                 apiKey = config.apiKey
                 currencySymbol = config.currencySymbol
-                return
+                return true
             }
         }
+        return false
     }
 
     private suspend fun applySavedMonthOffsetToWidget() {
