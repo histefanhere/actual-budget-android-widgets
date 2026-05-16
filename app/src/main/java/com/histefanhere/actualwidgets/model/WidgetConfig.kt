@@ -13,14 +13,14 @@ data class WidgetConfig(
     /** IDs of category groups the user has chosen to hide in the category health widget. */
     val hiddenCategoryGroupIds: Set<String> = emptySet(),
     val hiddenCategoryIds: Set<String> = emptySet(),
-    val categoryViewMode: CategoryViewMode = CategoryViewMode.GROUPS,
+    val categoryViewMode: CategoryViewMode = CategoryViewMode.CATEGORIES,
     val categoryRowFormat: CategoryRowFormat = CategoryRowFormat.SPENT_OF_BUDGETED,
     /** Controls what value progress bars measure against: budgeted amount or total available (budgeted + carry-over). */
     val barScaleMode: BarScaleMode = BarScaleMode.SPENT_OF_BUDGETED,
     /** When true, bar widths are proportional to budget size so the largest fills full width. */
     val normalizedScale: Boolean = false,
     /** When false, amounts are displayed as whole numbers with no decimal places. */
-    val showCents: Boolean = true,
+    val showCents: Boolean = false,
     /** When false, the spending progress bars are hidden in the category widget. */
     val showProgressBars: Boolean = true,
     /** When false, the previous/next month arrows are hidden in the widget header. */

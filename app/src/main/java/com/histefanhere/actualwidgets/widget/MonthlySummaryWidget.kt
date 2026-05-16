@@ -79,7 +79,7 @@ class MonthlySummaryWidget : GlanceAppWidget() {
                         val sizeStr = prefs[MonthlySummaryStateKeys.WIDGET_SIZE] ?: WidgetSize.MEDIUM.name
                         val sizes = runCatching { WidgetSize.valueOf(sizeStr) }
                             .getOrDefault(WidgetSize.MEDIUM).textSizes
-                        val showCents = prefs[MonthlySummaryStateKeys.SHOW_CENTS] ?: true
+                        val showCents = prefs[MonthlySummaryStateKeys.SHOW_CENTS] ?: false
                         val showMonthArrows = prefs[MonthlySummaryStateKeys.SHOW_MONTH_ARROWS] ?: true
                         val showRefreshIcon = prefs[MonthlySummaryStateKeys.SHOW_REFRESH_ICON] ?: true
                         val visibleStats = prefs[MonthlySummaryStateKeys.VISIBLE_BUDGET_STATS]

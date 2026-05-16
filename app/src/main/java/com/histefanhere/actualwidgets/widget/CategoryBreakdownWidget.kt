@@ -91,7 +91,7 @@ class CategoryBreakdownWidget : GlanceAppWidget() {
                     WidgetState.SUCCESS -> {
                         val viewMode = prefs[CategoryBreakdownStateKeys.VIEW_MODE]
                             ?.let { runCatching { CategoryViewMode.valueOf(it) }.getOrNull() }
-                            ?: CategoryViewMode.GROUPS
+                            ?: CategoryViewMode.CATEGORIES
                         val json = when (viewMode) {
                             CategoryViewMode.GROUPS     -> prefs[CategoryBreakdownStateKeys.GROUPS_JSON]
                             CategoryViewMode.CATEGORIES -> prefs[CategoryBreakdownStateKeys.CATEGORIES_JSON]
@@ -100,7 +100,7 @@ class CategoryBreakdownWidget : GlanceAppWidget() {
                         val sizes = prefs[CategoryBreakdownStateKeys.WIDGET_SIZE]
                             ?.let { runCatching { WidgetSize.valueOf(it) }.getOrNull() }
                             ?.textSizes ?: WidgetSize.MEDIUM.textSizes
-                        val showCents = prefs[CategoryBreakdownStateKeys.SHOW_CENTS] ?: true
+                        val showCents = prefs[CategoryBreakdownStateKeys.SHOW_CENTS] ?: false
                         val showProgressBars = prefs[CategoryBreakdownStateKeys.SHOW_PROGRESS_BARS] ?: true
                         val showMonthArrows = prefs[CategoryBreakdownStateKeys.SHOW_MONTH_ARROWS] ?: true
                         val showRefreshIcon = prefs[CategoryBreakdownStateKeys.SHOW_REFRESH_ICON] ?: true

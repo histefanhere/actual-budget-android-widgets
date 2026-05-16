@@ -94,9 +94,9 @@ class WidgetPrefsStore(private val context: Context) {
             hiddenCategoryIds = prefs[hiddenCategoryIdsKey(widgetId)] ?: emptySet(),
             categoryViewMode = prefs[key(widgetId, "category_view_mode")]
                 ?.let { runCatching { CategoryViewMode.valueOf(it) }.getOrNull() }
-                ?: CategoryViewMode.GROUPS,
+                ?: CategoryViewMode.CATEGORIES,
             normalizedScale = prefs[normalizedScaleKey(widgetId)] ?: false,
-            showCents = prefs[showCentsKey(widgetId)] ?: true,
+            showCents = prefs[showCentsKey(widgetId)] ?: false,
             showProgressBars = prefs[showProgressBarsKey(widgetId)] ?: true,
             showMonthArrows = prefs[showMonthArrowsKey(widgetId)] ?: true,
             showRefreshIcon = prefs[showRefreshIconKey(widgetId)] ?: true,
