@@ -126,7 +126,7 @@ class WidgetConfigViewModel(
                 }
                 if (!isMonthlySummaryWidget) fetchGroupsForConfig()
             } catch (e: Exception) {
-                budgetLoadError = "Failed to fetch budgets: ${e.message}"
+                budgetLoadError = "Failed to fetch budgets: ${e.toDisplayMessage()}"
             } finally {
                 isLoadingBudgets = false
             }
@@ -227,7 +227,7 @@ class WidgetConfigViewModel(
                 )
                 availableCategoryGroupsWithCategories = repo.fetchCategoryGroupListWithCategories(tempConfig)
             } catch (e: Exception) {
-                groupLoadError = "Failed to load groups: ${e.message}"
+                groupLoadError = "Failed to load groups: ${e.toDisplayMessage()}"
             } finally {
                 isLoadingGroups = false
             }
@@ -402,6 +402,21 @@ class WidgetConfigViewModel(
         } else {
             prefs[CategoryBreakdownStateKeys.MONTH_OFFSET]
         }
+    }
+
+    private fun Throwable.toDisplayMessage(): String {
+        val type = this::class.java.simpleName.ifBlank { "Exception" }
+        val message = message?.takeIf { it.isNotBlank() }
+        val causeMessage = cause
+            ?.takeIf { it !== this }
+            ?.let { cause ->
+                val causeType = cause::class.java.simpleName.ifBlank { "Cause" }
+                val causeText = cause.message?.takeIf { it.isNotBlank() }
+                if (causeText == null) causeType else "$causeType: $causeText"
+            }
+
+        return listOfNotNull(type, message, causeMessage)
+            .joinToString(": ")
     }
 
     companion object {

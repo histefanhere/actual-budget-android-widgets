@@ -21,13 +21,27 @@
 #-renamesourcefileattribute SourceFile
 
 # Retrofit and Gson inspect generic response types and annotations at runtime.
-# Without Signature, List<BudgetFile> can be reduced to a raw Class in release
-# builds, causing "Class cannot be cast to ParameterizedType" while parsing.
--keepattributes Signature
--keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
+# Without these attributes, suspend endpoints and List<T> response fields can be
+# reduced to raw classes in release builds, causing ParameterizedType cast errors.
+-keepattributes Signature,InnerClasses,EnclosingMethod,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
 
-# Keep Retrofit service method signatures and endpoint annotations.
+# Keep Retrofit interfaces that declare HTTP endpoints. allow* lets R8 still
+# optimize names where safe, while preserving the reflective method metadata.
+-keep,allowshrinking,allowoptimization,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+
+# Keep this app's Retrofit API and DTO fields so Gson can map JSON responses
+# after R8 minification, including unannotated fields such as groupId/name.
 -keep interface com.histefanhere.actualwidgets.data.api.ActualApiService { *; }
-
-# Keep API DTO fields so Gson can map JSON responses after R8 minification.
 -keep class com.histefanhere.actualwidgets.data.api.** { *; }
+
+# Keep app model classes that are serialized/deserialized through Gson for
+# widget state snapshots.
+-keep class com.histefanhere.actualwidgets.model.** { *; }
+
+# Standard Retrofit/R8 compatibility noise suppressions.
+-dontwarn javax.annotation.**
+-dontwarn kotlin.Unit
+-dontwarn retrofit2.KotlinExtensions
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
