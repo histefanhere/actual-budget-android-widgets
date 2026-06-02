@@ -6,11 +6,13 @@
 [![Android 8.0+](https://img.shields.io/badge/android-8.0%2B-3DDC84?logo=android&logoColor=white)](https://developer.android.com/about/versions/oreo)
 [![Kotlin](https://img.shields.io/badge/kotlin-android-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/)
 
-Android home screen widgets for [Actual Budget](https://actualbudget.org/).
+A small companion app for keeping your finances from [Actual Budget](https://actualbudget.org/) visible at a glance. Born out of an obsession of staying up-to-date with my budgets!
 
-The app connects to your Actual Budget server through
-[actual-http-api](https://github.com/jhonderson/actual-http-api) and shows budget
-information directly on your Android launcher.
+It connects to your Actual Budget server through [actual-http-api](https://github.com/jhonderson/actual-http-api) which is a requirement server-side.
+
+| ![Category Breakdown widget](screenshots/widget-1.png) | ![Category Breakdown widget](screenshots/widget-2.png) | ![Compact Category Breakdown widget](screenshots/widget-3.png) |
+|--------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------|
+| ![Monthly Summary widget](screenshots/widget-4.png)    | ![Monthly Summary widget](screenshots/widget-5.png)    | ![Monthly Summary widget](screenshots/widget-6.png)            |
 
 ## Features
 
@@ -21,17 +23,11 @@ information directly on your Android launcher.
 - Manual refresh button and automatic background refresh
 - Support for local HTTP Actual Budget setups
 
-## Screenshots
+### Configuration
 
-Screenshots will be added here later.
-
-<!--
-Suggested layout:
-
-| Monthly Summary | Category Breakdown | Configuration |
-| --- | --- | --- |
-| ![Monthly Summary](docs/screenshots/monthly-summary.png) | ![Category Breakdown](docs/screenshots/category-breakdown.png) | ![Configuration](docs/screenshots/configuration.png) |
--->
+| General Options                                 | Widget Display Options (Widget type specific)   | Filter Options                                         |
+|-------------------------------------------------|-------------------------------------------------|--------------------------------------------------------|
+| ![General settings](screenshots/settings-1.png) | ![Display settings](screenshots/settings-2.png) | ![Filter settings](screenshots/settings-3.png)         |
 
 ## Requirements
 
