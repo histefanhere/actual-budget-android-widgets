@@ -112,6 +112,8 @@ This project builds on work from:
 - [actual-http-api](https://github.com/jhonderson/actual-http-api), the local
   REST API bridge used to connect to Actual Budget
 
+*AI Disclosure: I have a computer science background but don't know how to code in Kotlin, nor could I afford the time to learn with a full-time job. This project is heavily AI-coded, which has allowed me to make this useful tool for myself and others. You are more than welcome to choose not to use this app based on this.*
+
 ## 🔗 Similar Projects
 
 Other projects in the Actual Budget ecosystem:

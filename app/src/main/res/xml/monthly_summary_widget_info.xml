@@ -12,4 +12,4 @@
     android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
     android:widgetFeatures="reconfigurable"
-    android:previewImage="@mipmap/ic_launcher" />
+    android:previewImage="@drawable/widget_summary_preview" />
