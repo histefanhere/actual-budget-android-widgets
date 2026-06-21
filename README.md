@@ -14,14 +14,31 @@ It connects to your Actual Budget server through [actual-http-api](https://githu
 |--------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------|
 | ![Monthly Summary widget](screenshots/widget-4.png)    | ![Monthly Summary widget](screenshots/widget-5-2.png)  | ![Monthly Summary widget](screenshots/widget-6.png)            |
 
+## Installation
+
+Download the latest APK from GitHub Releases and install it manually, or you can also install and update the app automatically via [Obtainium](https://github.com/ImranR98/Obtainium):
+
+[<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
+alt="Get it on GitHub"
+height="80">](https://github.com/histefanhere/ActualBudgetAndroidWidgets/releases)
+[<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6"
+alt="Get it on Obtainium"
+height="80">](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets)
+
 ## Features
 
-Widgets:
-1. **Category Breakdown Widget**: Visualize spending for the month in each category or category groups with progress bars that gradually fill as you spend
-2. **Monthly Summary Widget**: See overall statistics for each month such as Budgeted, Spent, Balance, Income, etc.
+### 1. Category Breakdown Widget
 
-- Widgets scale from a small size to very large, and with an adjustable font/element size you can choose exactly how your widgets appear.
-- configurable currency symbol & adjust if numbers are presented with cent-precision
+Visualize spending for the month in each category or category groups with progress bars that gradually fill as you spend
+
+### 2. Monthly Summary Widget
+
+See overall statistics for each month such as Budgeted, Spent, Balance, Income, etc.
+
+And plenty of options!
+
+- Choose exactly how your widgets appear with scaling from small to very large and adjustable font/element sizes
+- Configurable currency symbol & adjust if numbers are presented with cent-precision
 - Manual refresh button and automatic background refresh
 - Month offset so you can have widgets that always show last month statistics
 - Show & hide almost every UI element in the widget!
@@ -29,7 +46,7 @@ Widgets:
 - [Category Breakdown Widget] Choose between showing totals out of your amount budgeted or available money in that category
 - [Monthly Summary Widget] Choose between 9 different statistics to show and tailor it exactly to what you want to see
 
-### Configuration
+## Configuration
 
 My belief is that if it exists, "it" being a feature or UI element or app behavior, you should have *the option of choosing whether you want it or not.* (possibly stemming from being force-fed features I didn't ask for in current popular apps ;-;)
 
@@ -46,25 +63,6 @@ I encourage you to play around with all these options and tune the widgets to ex
 - Android 8.0 or newer
 - A running [Actual Budget](https://actualbudget.org/) instance
 - A running [actual-http-api](https://github.com/jhonderson/actual-http-api) instance
-
-## Installation
-
-Download the latest APK from [Releases](../../releases), then install it on your
-Android device.
-
-You can also install and update the app via [Obtainium](https://github.com/ImranR98/Obtainium):
-
-<a href="http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets">
-  <img 
-    src="https://raw.githubusercontent.com/ImranR98/Obtainium/refs/heads/main/assets/graphics/badge_obtainium.png"
-    alt="Get it on Obtainium"
-    height="55"
-  />
-</a>
-
-[<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6"
-  alt="Get it on Obtainium"
-  height="80">](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets)
 
 ## Setup
 
