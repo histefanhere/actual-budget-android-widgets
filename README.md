@@ -10,11 +10,11 @@ A small companion app for keeping your finances from [Actual Budget](https://act
 
 It connects to your Actual Budget server through [actual-http-api](https://github.com/jhonderson/actual-http-api) to showcase your budgets with two different highly-configurable widgets:
 
-#### 1. 📉 Category Breakdown Widget
+### 📊 Category Breakdown Widget
 
 Visualize spending for the month in each category or category groups with progress bars that gradually fill as you spend
 
-#### 2. 📅 Monthly Summary Widget
+### 📅 Monthly Summary Widget
 
 See overall statistics for each month such as Budgeted, Spent, Balance, Income, etc.
 
@@ -28,10 +28,10 @@ Download the latest APK from GitHub Releases and install it manually, or you can
 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
 alt="Get it on GitHub"
-height="80">](https://github.com/histefanhere/ActualBudgetAndroidWidgets/releases)
+height="80">](https://github.com/histefanhere/actual-budget-android-widgets/releases)
 [<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6"
 alt="Get it on Obtainium"
-height="80">](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets)
+height="80">](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/actual-budget-android-widgets)
 
 ## ⚙️ Configuration
 
