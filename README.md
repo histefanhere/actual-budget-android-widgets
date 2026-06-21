@@ -12,22 +12,34 @@ It connects to your Actual Budget server through [actual-http-api](https://githu
 
 | ![Category Breakdown widget](screenshots/widget-1.png) | ![Category Breakdown widget](screenshots/widget-2.png) | ![Compact Category Breakdown widget](screenshots/widget-3.png) |
 |--------------------------------------------------------|--------------------------------------------------------|----------------------------------------------------------------|
-| ![Monthly Summary widget](screenshots/widget-4.png)    | ![Monthly Summary widget](screenshots/widget-5.png)    | ![Monthly Summary widget](screenshots/widget-6.png)            |
+| ![Monthly Summary widget](screenshots/widget-4.png)    | ![Monthly Summary widget](screenshots/widget-5-2.png)  | ![Monthly Summary widget](screenshots/widget-6.png)            |
 
 ## Features
 
-- Monthly Summary widget with configurable budget stats
-- Category Breakdown widget for category or group spending
-- Configurable currency symbol, amount precision, and widget size
-- Optional category progress bars
+Widgets:
+1. **Category Breakdown Widget**: Visualize spending for the month in each category or category groups with progress bars that gradually fill as you spend
+2. **Monthly Summary Widget**: See overall statistics for each month such as Budgeted, Spent, Balance, Income, etc.
+
+- Widgets scale from a small size to very large, and with an adjustable font/element size you can choose exactly how your widgets appear.
+- configurable currency symbol & adjust if numbers are presented with cent-precision
 - Manual refresh button and automatic background refresh
-- Support for local HTTP Actual Budget setups
+- Month offset so you can have widgets that always show last month statistics
+- Show & hide almost every UI element in the widget!
+- [Category Breakdown Widget] Choose if every bar is the same length or if they scale to their budget
+- [Category Breakdown Widget] Choose between showing totals out of your amount budgeted or available money in that category
+- [Monthly Summary Widget] Choose between 9 different statistics to show and tailor it exactly to what you want to see
 
 ### Configuration
 
-| General Options                                 | Widget Display Options (Widget type specific)   | Filter Options                                         |
-|-------------------------------------------------|-------------------------------------------------|--------------------------------------------------------|
+My belief is that if it exists, "it" being a feature or UI element or app behavior, you should have *the option of choosing whether you want it or not.* (possibly stemming from being force-fed features I didn't ask for in current popular apps ;-;)
+
+So, many elements of these widgets can be configured to your liking:
+
+| General Options                                 | Display Options (Widget type specific)         | Filter Options                                         |
+|-------------------------------------------------|------------------------------------------------|--------------------------------------------------------|
 | ![General settings](screenshots/settings-1.png) | ![Display settings](screenshots/settings-2.png) | ![Filter settings](screenshots/settings-3.png)         |
+
+I encourage you to play around with all these options and tune the widgets to exactly your liking!
 
 ## Requirements
 
@@ -40,20 +52,25 @@ It connects to your Actual Budget server through [actual-http-api](https://githu
 Download the latest APK from [Releases](../../releases), then install it on your
 Android device.
 
-You can also install and update the app with
-[Obtainium](https://github.com/ImranR98/Obtainium). Add this repository URL and
-use the GitHub source:
+You can also install and update the app via [Obtainium](https://github.com/ImranR98/Obtainium):
 
-```text
-https://github.com/histefanhere/ActualBudgetAndroidWidgets
-```
+<a href="http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets">
+  <img 
+    src="https://raw.githubusercontent.com/ImranR98/Obtainium/refs/heads/main/assets/graphics/badge_obtainium.png"
+    alt="Get it on Obtainium"
+    height="55"
+  />
+</a>
+
+[<img src="https://github.com/user-attachments/assets/713d71c5-3dec-4ec4-a3f2-8d28d025a9c6"
+  alt="Get it on Obtainium"
+  height="80">](http://apps.obtainium.imranr.dev/redirect.html?r=obtainium://add/https://github.com/histefanhere/ActualBudgetAndroidWidgets)
 
 ## Setup
 
 1. Configure `actual-http-api` for your Actual Budget server.
 2. (Recommended) Find your actual-http-api API key and copy it to save it to your clipboard for easier setup.
-3. Add either the Monthly Summary or Category Breakdown widget to your home
-   screen.
+3. Add either the Monthly Summary or Category Breakdown widget to your homescreen.
 4. Enter your server URL, API key, and budget.
 5. Save the widget configuration.
 
@@ -91,16 +108,6 @@ The debug APK is generated at:
 ```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
-
-## Releases
-
-See the [Releases](../../releases) page for APK downloads and release notes.
-
-## HTTP Support
-
-Self-hosted Actual Budget setups often run on a local network over plain HTTP.
-This app allows cleartext HTTP traffic so those setups work without extra
-configuration. HTTPS is also supported and always recommended.
 
 ## Acknowledgements
 
