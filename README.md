@@ -24,7 +24,7 @@ See overall statistics for each month such as Budgeted, Spent, Balance, Income, 
 
 ## 📥 Installation
 
-Download the latest APK from GitHub Releases and install it manually, or you can also install and update the app automatically via [Obtainium](https://github.com/ImranR98/Obtainium):
+Download the latest APK from the [releases page](https://github.com/histefanhere/actual-budget-android-widgets/releases) and install it manually, or you can also install and update the app automatically via [Obtainium](https://github.com/ImranR98/Obtainium):
 
 [<img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png"
 alt="Get it on GitHub"
